@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Trips - NTS Global Voyage</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .trip-card {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .trip-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+        }
+        .trip-card .card-img-top {
+            border-radius: 12px 12px 0 0;
+            height: 180px;
+            object-fit: cover;
+        }
+        .trip-card .card-body {
+            padding: 1.25rem;
+        }
+        .trip-card .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .trip-card .card-subtitle {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .trip-card .trip-status {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+        }
+        .trip-card .status-planning {
+            background-color: #fff0c7;
+            color: #f59f0b;
+        }
+        .trip-card .status-confirmed {
+            background-color: #d3f9d8;
+            color: #37b24d;
+        }
+        .trip-card .status-completed {
+            background-color: #e9ecef;
+            color: #6c757d;
+        }
+        .trip-card .trip-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .trip-card .trip-meta i {
+            width: 16px;
+        }
+        .trip-card .card-footer {
+            background: none;
+            border-top: 1px solid #e9ecef;
+            padding: 0.75rem 1.25rem;
+        }
+        .trip-card .footer-icon {
+            color: #6c757d;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .trip-card .footer-icon:hover {
+            color: #0d6efd;
+        }
+        .trip-card .like-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.25rem;
+            color: white;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .trip-card .like-icon.favorited {
+            color: #ff6b6b;
+            background-color: rgba(255,255,255,0.3);
+        }
+        .filter-nav .nav-link {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .filter-nav .nav-link.active {
+            color: #0d6efd;
+            background-color: #e7f5ff;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="NTS Global Voyage" style="height:32px; width:auto; margin-right:10px;">
+                <span class="fs-4">NTS Global Voyage</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('saved_trips_page') }}">Saved Trips</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <form class="d-flex mx-auto" style="max-width:320px;">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Search destinations...">
+                    </div>
+                </form>
+                <div class="d-flex align-items-center gap-3 ms-auto">
+                    <a href="#" class="nav-icon text-secondary"><i class="fa fa-bell fa-lg"></i></a>
+                    <div class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle text-secondary" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">EN</a>
+                        <ul class="dropdown-menu" aria-labelledby="langDropdown">
+                            <li><a class="dropdown-item" href="#">EN</a></li>
+                            <li><a class="dropdown-item" href="#">FR</a></li>
+                        </ul>
+                    </div>
+                    <a href="#" class="nav-icon text-secondary"><i class="fa fa-user-circle fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold">Saved Trips</h2>
+                <p class="text-muted">Your collection of dream destinations and planned adventures</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active"><i class="fas fa-th-large"></i></button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="fas fa-list"></i></button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sort by
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item" href="#">Date Added</a></li>
+                        <li><a class="dropdown-item" href="#">Trip Date</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <ul class="nav nav-pills mb-4 filter-nav">
+            <li class="nav-item"><a class="nav-link {% if current_filter == 'all' %}active{% endif %}" href="{{ url_for('saved_trips_page', filter='all') }}">All</a></li>
+            <li class="nav-item"><a class="nav-link {% if current_filter == 'upcoming' %}active{% endif %}" href="{{ url_for('saved_trips_page', filter='upcoming') }}">Upcoming</a></li>
+            <li class="nav-item"><a class="nav-link {% if current_filter == 'past' %}active{% endif %}" href="{{ url_for('saved_trips_page', filter='past') }}">Past</a></li>
+            <li class="nav-item"><a class="nav-link {% if current_filter == 'favorites' %}active{% endif %}" href="{{ url_for('saved_trips_page', filter='favorites') }}">Favorites</a></li>
+            <li class="nav-item ms-auto"><a class="nav-link" href="#"><i class="fas fa-filter me-1"></i> Filters</a></li>
+        </ul>
+
+        <!-- Trips Grid -->
+        <div class="row g-4">
+            {% for trip in saved_trips %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card trip-card h-100">
+                    <div class="position-relative">
+                        <img src="{{ trip.image }}" class="card-img-top" alt="{{ trip.title }}">
+                        <div class="like-icon {% if trip.favorite %}favorited{% endif %}" data-title="{{ trip.title }}">
+                            <i class="{% if trip.favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title mb-1">{{ trip.title }}</h5>
+                                <p class="card-subtitle">{{ trip.location }}</p>
+                            </div>
+                            <span class="trip-status {{ 'status-confirmed' if trip.status == 'Confirmed' else 'status-planning' if trip.status == 'Planning Stage' else 'status-completed' }}">{{ trip.status }}</span>
+                        </div>
+                        <div class="trip-meta mt-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="far fa-calendar-alt me-2"></i>
+                                <span>{{ trip.date }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="far fa-check-circle me-2"></i>
+                                <span>{{ trip.activities }} activities saved</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="footer-icon me-3"><i class="fas fa-pencil-alt"></i></span>
+                            <span class="footer-icon"><i class="fas fa-share-alt"></i></span>
+                        </div>
+                        <span class="footer-icon"><i class="fas fa-trash-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <h6 class="fw-bold">NTS Global Voyage</h6>
+                    <p class="small">Making travel dreams come true since 2024. Your trusted partner in discovering the world's most amazing destinations.</p>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h6 class="fw-bold">Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white-50 text-decoration-none">About Us</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Destinations</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Experiences</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Plan Trip</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h6 class="fw-bold">Support</h6>
+                    <ul class="list-unstyled small">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Contact Us</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">FAQs</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Terms & Conditions</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <h6 class="fw-bold">Newsletter</h6>
+                    <form method="post" action="/subscribe" class="d-flex">
+                        <input type="email" name="email" class="form-control me-2" placeholder="Your email" required>
+                        <button class="btn btn-danger" type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4 border-top pt-3">
+                <span class="small">© 2024 NTS Global Voyage. All rights reserved.</span>
+                <div>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.like-icon').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                const tripTitle = this.dataset.title;
+                const icon = this.querySelector('i');
+
+                // Send the request to the backend
+                fetch(`/toggle-favorite/${tripTitle}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Toggle the visual state on the frontend
+                        this.classList.toggle('favorited', data.new_status);
+                        icon.classList.toggle('fas', data.new_status);
+                        icon.classList.toggle('far', !data.new_status);
+                    } else {
+                        console.error('Failed to toggle favorite status');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    </script>
+</body>
+</html>

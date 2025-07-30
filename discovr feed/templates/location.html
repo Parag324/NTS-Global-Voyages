@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ location.name }} - NTS Global Voyage</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Leaflet CSS in the head if not present -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        .hero-img {
+            width: 100%;
+            height: 340px;
+            object-fit: cover;
+            border-radius: 0 0 24px 24px;
+        }
+        .card-img-top {
+            height: 120px;
+            object-fit: cover;
+        }
+        .gallery-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .review-star {
+            color: #FFD700;
+        }
+        .footer {
+            background: #16213e;
+            color: #fff;
+            padding: 40px 0 20px 0;
+        }
+        .footer a, .footer p, .footer li {
+            color: #b0b8c1;
+        }
+        .footer .newsletter input {
+            border-radius: 6px 0 0 6px;
+            border: none;
+            padding: 8px 12px;
+        }
+        .footer .newsletter button {
+            border-radius: 0 6px 6px 0;
+            border: none;
+            padding: 8px 20px;
+            background: #ff6600;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="NTS Global Voyage" style="height:32px; width:auto; margin-right:10px;">
+                NTS Global Voyage
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                </ul>
+                <form class="d-flex ms-3">
+                    <input class="form-control me-2" type="search" placeholder="Search destination...">
+                </form>
+                <div class="ms-3">
+                    <span class="me-2">EN</span>
+                    <img src="https://img.icons8.com/ios-filled/20/000000/user.png" alt="User">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Image & Title -->
+    <div class="container-fluid p-0">
+        <img src="{{ location.hero_image }}" class="hero-img w-100" alt="{{ location.name }}">
+        <div class="container position-relative" style="top: -120px;">
+            <div class="text-white">
+                <h1 class="fw-bold">{{ location.name }}</h1>
+                <h5>{{ location.tagline }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: -80px;">
+        <div class="row g-4">
+            <!-- Left Column -->
+            <div class="col-lg-8">
+                <!-- Overview & Info -->
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <div class="info-bar">
+                        <div class="info-item">
+                            <span class="info-icon"><i class="bi bi-star"></i></span>
+                            <span>
+                                <div class="info-label">Rating</div>
+                                <div class="info-value">{{ location.rating }}/5 <span class="info-reviews">({{ location.review_count }} reviews)</span></div>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon"><i class="bi bi-geo-alt"></i></span>
+                            <span>
+                                <div class="info-label">Location</div>
+                                <div class="info-value">{{ location.region }}</div>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon"><i class="bi bi-clock"></i></span>
+                            <span>
+                                <div class="info-label">Best Time</div>
+                                <div class="info-value">{{ location.best_time }}</div>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon"><i class="bi bi-calendar-event"></i></span>
+                            <span>
+                                <div class="info-label">Duration</div>
+                                <div class="info-value">{{ location.duration }}</div>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon"><i class="bi bi-wallet2"></i></span>
+                            <span>
+                                <div class="info-label">Price Range</div>
+                                <div class="info-value">{{ location.price_range }}</div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form class="border rounded-3 p-3 mb-3">
+                                <h6>Book Your Stay</h6>
+                                <div class="mb-2">
+                                    <label class="form-label">Check-in</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Check-out</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Travelers</label>
+                                    <input type="number" class="form-control" value="2">
+                                </div>
+                                <button class="btn btn-primary w-100">Check Availability</button>
+                                <div class="text-muted small mt-2">Starting from ${{ location.price_per_night }}/night</div>
+                            </form>
+                            <div class="border rounded-3 p-3 mb-3">
+                                <h6>Weather</h6>
+                                <div class="fw-bold">{{ location.weather.temp }}°C <span class="text-muted small">{{ location.weather.status }}</span></div>
+                                <div class="text-muted small">Today</div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    {% for day in location.weather.forecast %}
+                                    <div class="text-center">
+                                        <div>{{ day.day }}</div>
+                                        <div>{{ day.temp }}°</div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="border rounded-3 p-3 mb-3">
+                                <h6>Map</h6>
+                                <!-- THIS LINK IS NOW CORRECTED TO USE THE SLUG -->
+                                <a href="{{ url_for('location_map', location_name=location.slug) }}">
+                                    <div id="mini-map" 
+                                         style="width:100%; height:80px; border-radius:8px; overflow:hidden;"
+                                         data-lat="{{ location.latitude|default(36.3932) }}"
+                                         data-lng="{{ location.longitude|default(25.4615) }}">
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h4>Overview</h4>
+                            <p>{{ location.overview }}</p>
+                            <div class="info-cards-row">
+                                <div class="info-card">
+                                    <div class="info-card-title">History</div>
+                                    <div class="info-card-desc">{{ location.history }}</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-card-title">Culture</div>
+                                    <div class="info-card-desc">{{ location.culture }}</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-card-title">Language</div>
+                                    <div class="info-card-desc">{{ location.language }}</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-card-title">Currency</div>
+                                    <div class="info-card-desc">{{ location.currency }}</div>
+                                </div>
+                            </div>
+                            <h5>Photo Gallery</h5>
+                            <div class="row g-2 mb-4 photo-gallery-hover">
+                                {% for img in location.gallery %}
+                                <div class="col-4">
+                                    <img src="{{ img }}" class="gallery-img" alt="Gallery" data-bs-toggle="modal" data-bs-target="#galleryModal" onclick="showGalleryModal('{{ img }}')">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <h5>Experiences</h5>
+                            <div class="row g-2">
+                                {% for exp in location.experiences %}
+                                <div class="col-6 col-md-3">
+                                    <div class="card h-100">
+                                        <img src="{{ exp.image }}" class="card-img-top" alt="{{ exp.title }}">
+                                        <div class="card-body p-2">
+                                            <div class="fw-bold small">{{ exp.title }}</div>
+                                            <div class="text-muted small">${{ exp.price }} &bull; {{ exp.duration }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <h6>Reviews</h6>
+                    {% for review in location.reviews %}
+                    <div class="mb-3">
+                        <div class="fw-bold">{{ review.user }}</div>
+                        <div class="text-muted small">{{ review.time }}</div>
+                        <div class="text-muted small">{{ review.text }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <h6>Similar Destinations</h6>
+                    {% for sim in location.similar %}
+                    <div class="mb-2">
+                        <div class="fw-bold">{{ sim.name }}</div>
+                        <div class="text-muted small">From ${{ sim.price }}/night</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
+                    <h6>Travel Tips</h6>
+                    <ul class="small">
+                        {% for tip in location.tips %}
+                        <li>{{ tip }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="fw-bold">NTS Global Voyage</h5>
+                    <p>Discover the world's most amazing destinations with our expert travel planning services.</p>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Destinations</a></li>
+                        <li><a href="#">Tours</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <h6>Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3 newsletter">
+                    <h6>Newsletter</h6>
+                    <form class="d-flex">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div>&copy; 2024 NTS Global Voyage. All rights reserved.</div>
+                <div>
+                    <a href="#" class="me-2"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="me-2"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body p-0 d-flex justify-content-center align-items-center">
+        <img id="galleryModalImg" src="" class="img-fluid rounded-4 shadow" alt="Gallery Large" style="max-height:80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showGalleryModal(imgUrl) {
+    document.getElementById('galleryModalImg').src = imgUrl;
+}
+// Add blur to modal backdrop
+var galleryModal = document.getElementById('galleryModal');
+galleryModal.addEventListener('shown.bs.modal', function () {
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.classList.add('modal-backdrop-blur');
+});
+galleryModal.addEventListener('hidden.bs.modal', function () {
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.classList.remove('modal-backdrop-blur');
+});
+</script>
+<!-- Add Leaflet JS at the end of body if not present -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the map container element
+        var mapContainer = document.getElementById('mini-map');
+        
+        // Read the latitude and longitude from the data attributes
+        var lat = parseFloat(mapContainer.dataset.lat);
+        var lng = parseFloat(mapContainer.dataset.lng);
+
+        // Check if the values are valid numbers, otherwise use defaults
+        if (isNaN(lat) || isNaN(lng)) {
+            lat = 36.3932;
+            lng = 25.4615;
+        }
+
+        var miniMap = L.map('mini-map', {
+            center: [lat, lng],
+            zoom: 13,
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: false,
+            zoomControl: false,
+            attributionControl: false
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(miniMap);
+        L.marker([lat, lng]).addTo(miniMap);
+    });
+</script>
+</body>
+</html>

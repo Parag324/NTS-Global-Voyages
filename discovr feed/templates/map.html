@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ location.name }} Map - NTS Global Voyage</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { background: #f7f9fb; }
+        #map { height: 100vh; min-height: 600px; border-radius: 12px; }
+        .sidebar {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+            padding: 24px 18px 18px 18px;
+            min-width: 320px;
+            max-width: 340px;
+        }
+        .sidebar .filters h6 { font-weight: bold; margin-bottom: 12px; }
+        .sidebar .form-check { margin-bottom: 8px; }
+        .sidebar .popular-dest, .sidebar .featured-dest { margin-bottom: 24px; }
+        .sidebar .popular-dest .card, .sidebar .featured-dest .card { border: none; border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
+        .sidebar .popular-dest .card-img, .sidebar .featured-dest .card-img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+        .sidebar .featured-dest .card-img-top { height: 120px; object-fit: cover; border-radius: 12px 12px 0 0; }
+        .sidebar .featured-dest .card { margin-bottom: 12px; }
+        .sidebar .featured-dest .card-body { padding: 10px 12px; }
+        .sidebar .featured-dest .card-title { font-size: 1rem; font-weight: 600; }
+        .sidebar .featured-dest .card-text { font-size: 0.95rem; color: #6c757d; }
+        .sidebar .featured-dest .meta { font-size: 0.85rem; color: #888; }
+        .sidebar .filters { border-bottom: 1px solid #eee; margin-bottom: 18px; padding-bottom: 12px; }
+        .sidebar .section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+        .sidebar .popular-dest .list-group-item { border: none; padding: 0.5rem 0; background: none; }
+        .sidebar .popular-dest .list-group-item.active { background: #f0f4fa; border-radius: 8px; }
+        .sidebar .popular-dest .dest-title { font-weight: 600; font-size: 1rem; }
+        .sidebar .popular-dest .dest-desc { font-size: 0.92rem; color: #6c757d; }
+        .sidebar .popular-dest .star { color: #FFD700; font-size: 1rem; }
+        .sidebar .popular-dest .dest-img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; margin-right: 10px; }
+        .sidebar .popular-dest .d-flex { align-items: center; }
+        .sidebar .popular-dest .badge { font-size: 0.85rem; }
+        .sidebar .featured-dest .card { min-width: 180px; }
+        .sidebar .featured-dest .card-title { font-size: 1rem; }
+        .sidebar .featured-dest .card-text { font-size: 0.95rem; }
+        .sidebar .featured-dest .meta { font-size: 0.85rem; }
+        .sidebar .featured-dest .card-footer { background: none; border: none; padding: 0 12px 10px 12px; }
+        .sidebar .featured-dest .bookmark { float: right; color: #bbb; }
+        .sidebar .featured-dest .bookmark.active { color: #ff6600; }
+        @media (max-width: 991px) {
+            .sidebar { max-width: 100vw; min-width: 0; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="/">NTS Global Voyage</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+                </ul>
+                <form class="d-flex ms-3">
+                    <input class="form-control me-2" type="search" placeholder="Search destination...">
+                </form>
+                <div class="ms-3">
+                    <span class="me-2">EN</span>
+                    <img src="https://img.icons8.com/ios-filled/20/000000/user.png" alt="User">
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid mt-3">
+        <div class="row g-3">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 mb-3">
+                <div class="sidebar">
+                    <div class="filters">
+                        <h6>Filters</h6>
+                        <div class="mb-2"><strong>Trip Type</strong></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="adventure"><label class="form-check-label" for="adventure">Adventure</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="cultural"><label class="form-check-label" for="cultural">Cultural</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="relaxation"><label class="form-check-label" for="relaxation">Relaxation</label></div>
+                        <div class="mb-2 mt-3"><strong>Duration</strong></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="1-3"><label class="form-check-label" for="1-3">1-3 days</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="4-7"><label class="form-check-label" for="4-7">4-7 days</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="8plus"><label class="form-check-label" for="8plus">8+ days</label></div>
+                        <div class="mb-2 mt-3"><strong>Budget Range</strong></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="budget1"><label class="form-check-label" for="budget1">$100-500</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="budget2"><label class="form-check-label" for="budget2">$500-1000</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="budget3"><label class="form-check-label" for="budget3">$1000+</label></div>
+                        <div class="mb-2 mt-3"><strong>Season</strong></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="spring"><label class="form-check-label" for="spring">Spring</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="summer"><label class="form-check-label" for="summer">Summer</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="fall"><label class="form-check-label" for="fall">Fall</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" id="winter"><label class="form-check-label" for="winter">Winter</label></div>
+                    </div>
+                    <div class="popular-dest">
+                        <div class="section-title">Popular Destinations</div>
+                        <ul class="list-group list-group-flush">
+                        {% for d in destinations[:3] %}
+                            <li class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ d.image }}" class="dest-img" alt="{{ d.name }}">
+                                    <div>
+                                        <div class="dest-title">{{ d.name }}</div>
+                                        <div class="dest-desc">{{ d.description }}</div>
+                                        <span class="star">&#9733;</span> {{ '%.1f'|format(d.rating) }}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="featured-dest">
+                        <div class="section-title">Featured Destinations</div>
+                        <div class="row">
+                        {% for d in destinations[3:7] %}
+                            <div class="col-12 mb-2">
+                                <div class="card h-100">
+                                    <img src="{{ d.image }}" class="card-img-top" alt="{{ d.name }}">
+                                    <div class="card-body">
+                                        <div class="card-title">{{ d.name }}</div>
+                                        <div class="card-text">{{ d.description }}</div>
+                                        <div class="meta">
+                                            ${{ d.price_per_night if d.price_per_night else 'N/A' }} &bull; {{ d.best_time if d.best_time else '' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Map Area -->
+            <div class="col-lg-9 col-md-8">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Default to Santorini if no coordinates
+        var lat = {{ location.latitude|default(36.3932, true) }};
+        var lng = {{ location.longitude|default(25.4615, true) }};
+        var map = L.map('map').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup('<b>{{ location.name }}</b><br>{{ location.region }}')
+            .openPopup();
+    </script>
+</body>
+</html> 
