@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Rewards - NTS Global Voyage</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Styles for the new filter/sort dropdowns */
+        .filter-dropdown-container, .sort-dropdown-container {
+            position: relative;
+        }
+        .filter-dropdown, .sort-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 240px;
+            z-index: 1001;
+            padding: 16px;
+            display: none; /* Hidden by default */
+            border: 1px solid #eef2f7;
+        }
+        .filter-dropdown.active, .sort-dropdown.active {
+            display: block;
+        }
+        .filter-dropdown h4, .sort-dropdown h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #475569;
+        }
+        .filter-option, .sort-option {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .sort-option a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .sort-option a:hover {
+            background-color: #f8fafc;
+        }
+        .filter-actions {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .filter-actions button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+            cursor: pointer;
+        }
+        .filter-actions button.apply-btn {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+        /* Basic styles for a popup/modal */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .popup-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .popup-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        #popup-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        /* Styles for Statement Popup */
+        .statement-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .statement-table th, .statement-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eef2f7; }
+        .statement-table th { font-weight: 600; color: #475569; }
+        .statement-table .points-earned { color: #22c55e; }
+        .statement-table .points-redeemed { color: #ef4444; }
+
+        /* Styles for Calculator Popup */
+        .calculator { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-display { grid-column: 1 / -1; background: #f1f5f9; border-radius: 8px; padding: 15px; text-align: right; font-size: 24px; font-weight: 600; margin-bottom: 10px; min-height: 30px;}
+        .calc-btn { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+        .calc-btn.operator { background: #e2e8f0; }
+        .calc-btn.equals { background: #1e3a8a; color: white; grid-column: 3 / -1; }
+        
+        /* FIX: Hide elements prone to flashing until ready */
+        #redeem-user-name, #redeem-profile-image {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="redeem-page">
+    <!-- Navigation Bar with Dropdown -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-square">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36">
+                    </div>
+                    <span class="logo-text">NTS Global Voyage</span>
+                </div>
+            </div>
+            <div class="nav-center">
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-ticket"></i> Bookings</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+                <div class="profile-dropdown">
+                    <a href="#" class="nav-link active profile-dropdown-toggle">
+                        <i class="fas fa-user"></i>
+                        <span id="nav-user-name">Profile</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+                        <a href="{{ url_for('redeem') }}" class="dropdown-item">Redeem Points</a>
+                        <a href="{{ url_for('history') }}" class="dropdown-item">History</a>
+                        <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="search-bar"><input type="text" placeholder="Search destinati..."></div>
+                <div class="nav-icons">
+                    <a href="{{ url_for('notifications') }}" class="nav-icon-link"><i class="fas fa-bell"></i></a>
+                    <div class="language-selector"><i class="fas fa-globe"></i><span>EN</span></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Redeem Content -->
+    <div class="main-container redeem-container">
+        <!-- Profile Header Bar -->
+        <header class="redeem-profile-header">
+            <div class="redeem-user-info">
+                <img id="redeem-profile-image" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" alt="User Avatar" class="redeem-avatar">
+                <div>
+                    <h1 id="redeem-user-name">John Anderson</h1>
+                    <span class="gold-member">Gold Voyager</span>
+                    <p class="voyage-coins">2,450 Voyage Coins</p>
+                    <div class="redeem-progress-bar">
+                        <div class="redeem-progress-fill" style="width: 75%;"></div>
+                    </div>
+                    <p class="redeem-progress-text">350 coins until next reward</p>
+                </div>
+            </div>
+            <div class="redeem-stats">
+                <div class="redeem-stat-item"><span class="stat-value">12</span><span class="stat-label">Consistent Voyager</span></div>
+                <div class="redeem-stat-item"><span class="stat-value">24,500</span><span class="stat-label">Total Miles</span></div>
+                <div class="redeem-stat-item"><span class="stat-value">8</span><span class="stat-label">Rewards Redeemed</span></div>
+            </div>
+        </header>
+
+        <!-- Available Rewards Section -->
+        <section class="available-rewards">
+            <div class="rewards-header">
+                <h2>Available Rewards</h2>
+                <div class="rewards-filters">
+                    <div class="rewards-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="rewards-search-input" placeholder="Search rewards...">
+                    </div>
+                    <div class="filter-dropdown-container">
+                        <button id="filter-btn" class="filter-sort-btn"><i class="fas fa-filter"></i> Filter</button>
+                        <div id="filter-dropdown" class="filter-dropdown">
+                            <h4>Filter by Points</h4>
+                            <label class="filter-option"><input type="radio" name="points" value="all" checked> All</label>
+                            <label class="filter-option"><input type="radio" name="points" value="under-1000"> Under 1,000</label>
+                            <label class="filter-option"><input type="radio" name="points" value="1000-2000"> 1,000 - 2,000</label>
+                            <label class="filter-option"><input type="radio" name="points" value="over-2000"> Over 2,000</label>
+                            <div class="filter-actions">
+                                <button id="clear-filter-btn">Clear</button>
+                                <button id="apply-filter-btn" class="apply-btn">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sort-dropdown-container">
+                        <button id="sort-btn" class="filter-sort-btn">Sort by <i class="fas fa-chevron-down"></i></button>
+                        <div id="sort-dropdown" class="sort-dropdown">
+                            <div class="sort-option"><a href="#" data-sort="cost-desc">Points: High to Low</a></div>
+                            <div class="sort-option"><a href="#" data-sort="cost-asc">Points: Low to High</a></div>
+                            <div class="sort-option"><a href="#" data-sort="alpha-asc">Alphabetical (A-Z)</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="rewards-subtitle">Redeem your Voyage Coins for exclusive rewards</p>
+            <div id="rewards-grid-container" class="rewards-grid"></div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item"><h4>How do I earn Voyage Coins?</h4><p>You earn Voyage Coins through various activities including completing voyages, making bookings, and participating in special promotions.</p></div>
+                <div class="faq-item"><h4>When do rewards expire?</h4><p>Rewards are valid for 12 months from the date of redemption. Please ensure you have enough coins before redeeming.</p></div>
+                <div class="faq-item"><h4>Can I transfer rewards to another member?</h4><p>Yes, you can transfer rewards to other NTS Global Voyage members through your account settings.</p></div>
+                <div class="faq-item"><h4>How do I redeem rewards?</h4><p>Simply select the reward you want, click 'Redeem Now', and follow the instructions to complete your redemption.</p></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36" style="filter: brightness(0) invert(1);">
+                    <span>NTS Global Voyage</span>
+                </div>
+                <p>Experience the world's most luxurious voyages with NTS Global Voyage.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">© 2024 NTS Global Voyage. All rights reserved.</div>
+            <div class="social-icons">
+                <i class="fab fa-facebook-f"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-linkedin-in"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Popup Modal -->
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content">
+            <h3 id="popup-title">Action</h3>
+            <p id="popup-message">Details about the action.</p>
+            <button id="popup-close" class="popup-close-btn">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. DATA & INITIAL SETUP ---
+            const allRewards = [
+                { id: 1, title: 'Premium Cabin Upgrade', cost: 1500, description: 'Upgrade your next voyage to a premium cabin with stunning ocean views.', image: 'https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=400&fit=crop' },
+                { id: 2, title: 'NTS Travel Kit', cost: 800, description: 'Premium travel essentials kit including toiletries and accessories.', image: 'https://images.unsplash.com/photo-1522199755839-a2bacb67c546?w=400&fit=crop' },
+                { id: 3, title: 'Gourmet Dining Package', cost: 1200, description: 'Fine dining experience for two at our exclusive onboard restaurant.', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&fit=crop' },
+                { id: 4, title: 'Spa Day Package', cost: 2300, description: 'Full day of luxury spa treatments and wellness activities.', image: 'https://images.unsplash.com/photo-1544161515-cfd89f884a27?w=400&fit=crop' },
+                { id: 5, title: 'Wine Tasting Experience', cost: 1800, description: 'Exclusive wine tasting experience with sommelier.', image: 'https://images.unsplash.com/photo-1517702814239-6a5193467e5a?w=400&fit=crop' },
+                { id: 6, title: 'Sunset Cruise', cost: 900, description: 'Private sunset cruise with champagne and canapés.', image: 'https://images.unsplash.com/photo-1573334884296-4a88453444a2?w=400&fit=crop' }
+            ];
+
+            let currentFilter = 'all';
+            let currentSort = 'cost-desc';
+
+            const rewardsGrid = document.getElementById('rewards-grid-container');
+            const searchInput = document.getElementById('rewards-search-input');
+            const filterBtn = document.getElementById('filter-btn');
+            const sortBtn = document.getElementById('sort-btn');
+            const filterDropdown = document.getElementById('filter-dropdown');
+            const sortDropdown = document.getElementById('sort-dropdown');
+            const applyFilterBtn = document.getElementById('apply-filter-btn');
+            const clearFilterBtn = document.getElementById('clear-filter-btn');
+            const popup = document.getElementById('popup');
+            const popupTitle = document.getElementById('popup-title');
+            const popupMessage = document.getElementById('popup-message');
+            const popupClose = document.getElementById('popup-close');
+            const redeemUserNameEl = document.getElementById('redeem-user-name');
+            const redeemProfileImageEl = document.getElementById('redeem-profile-image');
+
+            // --- 2. CORE FUNCTIONS ---
+            function renderRewards(rewards) {
+                rewardsGrid.innerHTML = '';
+                if (rewards.length === 0) {
+                    rewardsGrid.innerHTML = '<p>No rewards match your criteria.</p>';
+                    return;
+                }
+                rewards.forEach(reward => {
+                    const card = `
+                        <div class="reward-card">
+                            <img src="${reward.image}" alt="${reward.title}">
+                            <div class="reward-content">
+                                <div class="reward-title">
+                                    <h3>${reward.title}</h3>
+                                    <span class="reward-cost"><i class="fas fa-coins"></i> ${reward.cost.toLocaleString()}</span>
+                                </div>
+                                <p>${reward.description}</p>
+                                <button class="redeem-now-btn" data-reward-title="${reward.title}">Redeem Now</button>
+                            </div>
+                        </div>
+                    `;
+                    rewardsGrid.innerHTML += card;
+                });
+            }
+
+            function applyFiltersAndSort() {
+                let rewardsToDisplay = [...allRewards];
+
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    rewardsToDisplay = rewardsToDisplay.filter(reward => 
+                        reward.title.toLowerCase().includes(searchTerm) ||
+                        reward.description.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                if (currentFilter !== 'all') {
+                    rewardsToDisplay = rewardsToDisplay.filter(reward => {
+                        if (currentFilter === 'under-1000') return reward.cost < 1000;
+                        if (currentFilter === '1000-2000') return reward.cost >= 1000 && reward.cost <= 2000;
+                        if (currentFilter === 'over-2000') return reward.cost > 2000;
+                        return true;
+                    });
+                }
+
+                if (currentSort === 'cost-asc') {
+                    rewardsToDisplay.sort((a, b) => a.cost - b.cost);
+                } else if (currentSort === 'cost-desc') {
+                    rewardsToDisplay.sort((a, b) => b.cost - a.cost);
+                } else if (currentSort === 'alpha-asc') {
+                    rewardsToDisplay.sort((a, b) => a.title.localeCompare(b.title));
+                }
+
+                renderRewards(rewardsToDisplay);
+            }
+            
+            function showPopup(title, message) {
+                popupTitle.textContent = title;
+                popupMessage.innerHTML = message;
+                popup.style.display = 'flex';
+            }
+
+            // --- 3. EVENT LISTENERS ---
+            searchInput.addEventListener('input', applyFiltersAndSort);
+
+            filterBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortDropdown.classList.remove('active');
+                filterDropdown.classList.toggle('active');
+            });
+
+            applyFilterBtn.addEventListener('click', () => {
+                const selectedFilter = document.querySelector('input[name="points"]:checked');
+                if (selectedFilter) {
+                    currentFilter = selectedFilter.value;
+                }
+                applyFiltersAndSort();
+                filterDropdown.classList.remove('active');
+            });
+
+            clearFilterBtn.addEventListener('click', () => {
+                document.querySelector('input[name="points"][value="all"]').checked = true;
+                currentFilter = 'all';
+                applyFiltersAndSort();
+                filterDropdown.classList.remove('active');
+            });
+
+            sortBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                filterDropdown.classList.remove('active');
+                sortDropdown.classList.toggle('active');
+            });
+
+            sortDropdown.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (e.target.tagName === 'A') {
+                    currentSort = e.target.dataset.sort;
+                    applyFiltersAndSort();
+                    sortDropdown.classList.remove('active');
+                }
+            });
+
+            rewardsGrid.addEventListener('click', function(e) {
+                if (e.target.classList.contains('redeem-now-btn')) {
+                    const rewardTitle = e.target.getAttribute('data-reward-title');
+                    showPopup('Redeem Reward', `You have successfully redeemed the "${rewardTitle}" reward!`);
+                }
+            });
+
+            popupClose.addEventListener('click', () => popup.style.display = 'none');
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+
+            window.addEventListener('click', (e) => {
+                if (!filterBtn.contains(e.target) && !filterDropdown.contains(e.target)) {
+                    filterDropdown.classList.remove('active');
+                }
+                if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+                    sortDropdown.classList.remove('active');
+                }
+            });
+
+            // --- 4. INITIAL PAGE LOAD ---
+            applyFiltersAndSort();
+
+            const dropdownToggle = document.querySelector('.profile-dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            if(dropdownToggle) {
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('active');
+                });
+            }
+            window.addEventListener('click', function(e) {
+                if (dropdownMenu && dropdownToggle && !dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+
+            const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+            if (userProfile) {
+                if (userProfile.firstName) {
+                    document.getElementById('nav-user-name').textContent = userProfile.firstName;
+                    redeemUserNameEl.textContent = `${userProfile.firstName} ${userProfile.lastName}`;
+                }
+                if (userProfile.profileImage) {
+                    redeemProfileImageEl.src = userProfile.profileImage;
+                }
+            }
+            
+            redeemUserNameEl.style.visibility = 'visible';
+            redeemProfileImageEl.style.visibility = 'visible';
+        });
+    </script>
+</body>
+</html>

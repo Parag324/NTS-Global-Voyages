@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - NTS Global Voyage</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Styles for the new filter/sort dropdowns */
+        .filter-dropdown-container, .sort-dropdown-container {
+            position: relative;
+        }
+        .filter-dropdown, .sort-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 240px;
+            z-index: 1001;
+            padding: 16px;
+            display: none; /* Hidden by default */
+            border: 1px solid #eef2f7;
+        }
+        .filter-dropdown.active, .sort-dropdown.active {
+            display: block;
+        }
+        .filter-dropdown h4, .sort-dropdown h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #475569;
+        }
+        .filter-option, .sort-option {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .sort-option a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 500;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .sort-option a:hover {
+            background-color: #f8fafc;
+        }
+        .filter-actions {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .filter-actions button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
+            cursor: pointer;
+        }
+        .filter-actions button.apply-btn {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+        /* Basic styles for a popup/modal */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .popup-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .popup-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        #popup-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        /* Styles for Statement Popup */
+        .statement-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .statement-table th, .statement-table td { padding: 8px; text-align: left; border-bottom: 1px solid #eef2f7; }
+        .statement-table th { font-weight: 600; color: #475569; }
+        .statement-table .points-earned { color: #22c55e; }
+        .statement-table .points-redeemed { color: #ef4444; }
+
+        /* Styles for Calculator Popup */
+        .calculator { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .calc-display { grid-column: 1 / -1; background: #f1f5f9; border-radius: 8px; padding: 15px; text-align: right; font-size: 24px; font-weight: 600; margin-bottom: 10px; min-height: 30px;}
+        .calc-btn { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+        .calc-btn.operator { background: #e2e8f0; }
+        .calc-btn.equals { background: #1e3a8a; color: white; grid-column: 3 / -1; }
+        
+        /* FIX: Hide elements prone to flashing until ready */
+        #history-user-name, #history-profile-image {
+            visibility: hidden;
+        }
+        /* NEW: Hover effect for quick actions */
+        .quick-actions li a:hover {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body class="history-page">
+    <!-- Navigation Bar with Dropdown -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-square">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36">
+                    </div>
+                    <span class="logo-text">NTS Global Voyage</span>
+                </div>
+            </div>
+            <div class="nav-center">
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-ticket"></i> Bookings</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+                <div class="profile-dropdown">
+                    <a href="#" class="nav-link active profile-dropdown-toggle">
+                        <i class="fas fa-user"></i>
+                        <span id="nav-user-name">Profile</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+                        <a href="{{ url_for('redeem') }}" class="dropdown-item">Redeem Points</a>
+                        <a href="{{ url_for('history') }}" class="dropdown-item">History</a>
+                        <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="search-bar"><input type="text" placeholder="Search destinati..."></div>
+                <div class="nav-icons">
+                    <a href="{{ url_for('notifications') }}" class="nav-icon-link"><i class="fas fa-bell"></i></a>
+                    <div class="language-selector"><i class="fas fa-globe"></i><span>EN</span></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main History Content -->
+    <div class="main-container history-container">
+        <div class="history-body">
+            <!-- Main Content Area -->
+            <main class="history-main">
+                <header class="history-profile-header card">
+                    <div class="history-user-details">
+                        <img id="history-profile-image" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" alt="User Avatar" class="history-avatar">
+                        <div>
+                            <h1 id="history-user-name">John Smith</h1>
+                            <span class="gold-member">Gold Member</span>
+                            <span class="member-since-text">Member since 2022</span>
+                        </div>
+                    </div>
+                    <div class="history-points-summary">
+                        <div class="points-item"><span class="points-label">Total Points</span><span class="points-value">12,450</span></div>
+                        <div class="points-item"><span class="points-label">Points Earned</span><span class="points-value">5,230</span></div>
+                        <div class="points-item"><span class="points-label">Points Redeemed</span><span class="points-value">2,780</span></div>
+                    </div>
+                </header>
+
+                <section class="transaction-history card">
+                    <div class="transaction-header">
+                        <h2>Transaction History</h2>
+                        <div class="transaction-filters">
+                             <div class="filter-dropdown-container">
+                                <button id="filter-btn" class="filter-sort-btn"><i class="fas fa-filter"></i> Filter</button>
+                                <div id="filter-dropdown" class="filter-dropdown">
+                                    <h4>Filter by Type</h4>
+                                    <label class="filter-option"><input type="radio" name="transaction-type" value="all" checked> All Transactions</label>
+                                    <label class="filter-option"><input type="radio" name="transaction-type" value="earned"> Points Earned</label>
+                                    <label class="filter-option"><input type="radio" name="transaction-type" value="redeemed"> Points Redeemed</label>
+                                </div>
+                            </div>
+                            <div class="sort-dropdown-container">
+                                <button id="sort-btn" class="filter-sort-btn">Latest First <i class="fas fa-chevron-down"></i></button>
+                                <div id="sort-dropdown" class="sort-dropdown">
+                                    <div class="sort-option"><a href="#" data-sort="desc">Latest First</a></div>
+                                    <div class="sort-option"><a href="#" data-sort="asc">Oldest First</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="timeline-container" class="timeline">
+                        <!-- Timeline items will be dynamically inserted here -->
+                    </div>
+                </section>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="history-sidebar">
+                <div class="quick-actions card">
+                    <h4>Quick Actions</h4>
+                    <ul>
+                        <li><a href="#" id="view-statement-btn"><i class="fas fa-file-alt"></i> View Statement</a></li>
+                        <li><a href="#" id="download-history-btn"><i class="fas fa-download"></i> Download History</a></li>
+                        <li><a href="#" id="points-calculator-btn"><i class="fas fa-calculator"></i> Points Calculator</a></li>
+                    </ul>
+                </div>
+                <div class="upcoming-rewards card">
+                    <h4>Upcoming Rewards</h4>
+                    <p class="progress-title">Progress to Platinum <span class="progress-percent">75%</span></p>
+                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+                    <p class="progress-note">Earn 2,550 more points to reach Platinum status</p>
+                    <div class="available-rewards-list">
+                        <h5>Available Rewards</h5>
+                        <p>Premium Cabin Upgrade <span>15,000 points</span></p>
+                        <p>Luxury Hotel Night <span>20,000 points</span></p>
+                    </div>
+                </div>
+                <div class="need-help card">
+                    <h4>Need Help?</h4>
+                    <p>Our support team is available 24/7 to assist you with any questions.</p>
+                    <button id="contact-support-btn" class="contact-support-btn">Contact Support</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36" style="filter: brightness(0) invert(1);">
+                    <span>NTS GLOBAL VOYAGE</span>
+                </div>
+                <p>Making your travel dreams come true with unforgettable experiences and exclusive rewards.</p>
+            </div>
+            <div class="footer-section"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Blog</a></li></ul></div>
+            <div class="footer-section"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul></div>
+            <div class="footer-section"><h4>Connect</h4><ul><li><a href="#">Facebook</a></li><li><a href="#">Twitter</a></li><li><a href="#">Instagram</a></li><li><a href="#">LinkedIn</a></li></ul></div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">© 2024 NTS Global Voyage. All rights reserved.</div>
+            <div class="social-icons"><i class="fab fa-facebook-f"></i><i class="fab fa-twitter"></i><i class="fab fa-instagram"></i><i class="fab fa-linkedin-in"></i></div>
+        </div>
+    </footer>
+
+    <!-- Popup Modal -->
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 id="popup-title">Action</h3>
+                <button id="popup-close" class="popup-close-btn">&times;</button>
+            </div>
+            <div id="popup-body">
+                <!-- Dynamic content goes here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. DATA & INITIAL SETUP ---
+            const allTransactions = [
+                { date: '2023-07-15', type: 'earned', title: 'Mediterranean Cruise Booking', meta: 'MED23071501', points: 2500 },
+                { date: '2023-06-28', type: 'redeemed', title: 'Airport Lounge Access', meta: 'Location: London Heathrow T5', points: -1000 },
+                { date: '2023-06-12', type: 'earned', title: 'Caribbean Island Hopping Tour', meta: 'CAR23061202', points: 1750 },
+                { date: '2023-05-25', type: 'earned', title: 'Hotel Booking Bonus', meta: 'Hilton Resort Maldives', points: 980 },
+                { date: '2023-05-03', type: 'redeemed', title: 'Cabin Upgrade', meta: 'Alaska Cruise AS23050301', points: -1780 }
+            ];
+
+            let currentFilter = 'all';
+            let currentSort = 'desc';
+
+            const timelineContainer = document.getElementById('timeline-container');
+            const filterBtn = document.getElementById('filter-btn');
+            const sortBtn = document.getElementById('sort-btn');
+            const filterDropdown = document.getElementById('filter-dropdown');
+            const sortDropdown = document.getElementById('sort-dropdown');
+            const popup = document.getElementById('popup');
+            const popupTitle = document.getElementById('popup-title');
+            const popupBody = document.getElementById('popup-body');
+            const popupClose = document.getElementById('popup-close');
+            const historyUserNameEl = document.getElementById('history-user-name');
+            const historyProfileImageEl = document.getElementById('history-profile-image');
+
+            // --- 2. CORE FUNCTIONS ---
+            function renderHistory(transactions) {
+                timelineContainer.innerHTML = '';
+                if (transactions.length === 0) {
+                    timelineContainer.innerHTML = '<p>No transactions match your criteria.</p>';
+                    return;
+                }
+                
+                const grouped = transactions.reduce((acc, tx) => {
+                    const month = new Date(tx.date).toLocaleString('default', { month: 'long', year: 'numeric' });
+                    if (!acc[month]) acc[month] = [];
+                    acc[month].push(tx);
+                    return acc;
+                }, {});
+
+                for (const month in grouped) {
+                    let monthHtml = `<h3 class="timeline-month">${month}</h3>`;
+                    grouped[month].forEach(tx => {
+                        const iconClass = tx.type === 'earned' ? 'earned' : 'redeemed';
+                        const icon = tx.type === 'earned' ? 'fa-arrow-up' : 'fa-arrow-down';
+                        const pointsClass = tx.type === 'earned' ? 'points-earned' : 'points-redeemed';
+                        const pointsText = (tx.points > 0 ? '+' : '') + tx.points.toLocaleString();
+                        const dateFormatted = new Date(tx.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                        monthHtml += `
+                            <div class="timeline-item">
+                                <div class="timeline-icon ${iconClass}"><i class="fas ${icon}"></i></div>
+                                <div class="timeline-content">
+                                    <p class="transaction-title">${tx.title}</p>
+                                    <p class="transaction-meta">${dateFormatted} &nbsp;&bull;&nbsp; ${tx.meta}</p>
+                                </div>
+                                <div class="transaction-points ${pointsClass}">${pointsText} points</div>
+                            </div>
+                        `;
+                    });
+                    timelineContainer.innerHTML += monthHtml;
+                }
+            }
+
+            function applyFiltersAndSort() {
+                let transactionsToDisplay = [...allTransactions];
+                if (currentFilter !== 'all') {
+                    transactionsToDisplay = transactionsToDisplay.filter(tx => tx.type === currentFilter);
+                }
+                if (currentSort === 'asc') {
+                    transactionsToDisplay.sort((a, b) => new Date(a.date) - new Date(b.date));
+                } else {
+                    transactionsToDisplay.sort((a, b) => new Date(b.date) - new Date(a.date));
+                }
+                renderHistory(transactionsToDisplay);
+            }
+
+            function showPopup(title, content) {
+                popupTitle.textContent = title;
+                popupBody.innerHTML = content;
+                popup.style.display = 'flex';
+            }
+
+            // --- 3. FUNCTIONAL ACTIONS ---
+            function viewStatement() {
+                let tableHTML = `<table class="statement-table"><thead><tr><th>Date</th><th>Description</th><th>Points</th></tr></thead><tbody>`;
+                allTransactions.forEach(tx => {
+                    const pointsClass = tx.points > 0 ? 'points-earned' : 'points-redeemed';
+                    const pointsText = (tx.points > 0 ? '+' : '') + tx.points.toLocaleString();
+                    tableHTML += `<tr><td>${tx.date}</td><td>${tx.title}</td><td class="${pointsClass}">${pointsText}</td></tr>`;
+                });
+                tableHTML += `</tbody></table>`;
+                showPopup('Account Statement', tableHTML);
+            }
+
+            function downloadHistory() {
+                let csvContent = "Date,Type,Title,Meta,Points\n";
+                allTransactions.forEach(tx => {
+                    csvContent += `${tx.date},${tx.type},"${tx.title}","${tx.meta}",${tx.points}\n`;
+                });
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8,' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", "transaction_history.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function showCalculator() {
+                const calculatorHTML = `
+                    <div class="calculator">
+                        <div id="calc-display" class="calc-display"></div>
+                        <button class="calc-btn">7</button><button class="calc-btn">8</button><button class="calc-btn">9</button><button class="calc-btn operator">/</button>
+                        <button class="calc-btn">4</button><button class="calc-btn">5</button><button class="calc-btn">6</button><button class="calc-btn operator">*</button>
+                        <button class="calc-btn">1</button><button class="calc-btn">2</button><button class="calc-btn">3</button><button class="calc-btn operator">-</button>
+                        <button class="calc-btn">0</button><button class="calc-btn">.</button><button id="calc-clear" class="calc-btn">C</button><button class="calc-btn operator">+</button>
+                        <button id="calc-equals" class="calc-btn equals">=</button>
+                    </div>
+                `;
+                showPopup('Points Calculator', calculatorHTML);
+                
+                const display = document.getElementById('calc-display');
+                document.querySelectorAll('.calc-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        if (button.id === 'calc-equals') {
+                            try {
+                                display.textContent = eval(display.textContent.replace(/[^-()\d/*+.]/g, ''));
+                            } catch {
+                                display.textContent = 'Error';
+                            }
+                        } else if (button.id === 'calc-clear') {
+                            display.textContent = '';
+                        } else {
+                            display.textContent += button.textContent;
+                        }
+                    });
+                });
+            }
+
+            // --- 4. EVENT LISTENERS ---
+            filterBtn.addEventListener('click', (e) => { e.stopPropagation(); sortDropdown.classList.remove('active'); filterDropdown.classList.toggle('active'); });
+            filterDropdown.addEventListener('change', (e) => { if(e.target.name === 'transaction-type') { currentFilter = e.target.value; applyFiltersAndSort(); } });
+            sortBtn.addEventListener('click', (e) => { e.stopPropagation(); filterDropdown.classList.remove('active'); sortDropdown.classList.toggle('active'); });
+            sortDropdown.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (e.target.tagName === 'A') {
+                    currentSort = e.target.dataset.sort;
+                    sortBtn.firstChild.textContent = e.target.textContent + ' ';
+                    applyFiltersAndSort();
+                    sortDropdown.classList.remove('active');
+                }
+            });
+
+            document.getElementById('view-statement-btn').addEventListener('click', (e) => { e.preventDefault(); viewStatement(); });
+            document.getElementById('download-history-btn').addEventListener('click', (e) => { e.preventDefault(); downloadHistory(); });
+            document.getElementById('points-calculator-btn').addEventListener('click', (e) => { e.preventDefault(); showCalculator(); });
+            document.getElementById('contact-support-btn').addEventListener('click', () => showPopup('Contact Support', 'You will be connected to an agent shortly.'));
+
+            popupClose.addEventListener('click', () => popup.style.display = 'none');
+            popup.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
+            window.addEventListener('click', () => { filterDropdown.classList.remove('active'); sortDropdown.classList.remove('active'); });
+
+            // --- 5. INITIAL PAGE LOAD ---
+            applyFiltersAndSort();
+
+            const dropdownToggle = document.querySelector('.profile-dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            if(dropdownToggle) {
+                dropdownToggle.addEventListener('click', function(e) { e.preventDefault(); dropdownMenu.classList.toggle('active'); });
+            }
+            window.addEventListener('click', function(e) {
+                if (dropdownMenu && dropdownToggle && !dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+
+            const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+            if (userProfile) {
+                if (userProfile.firstName) {
+                    document.getElementById('nav-user-name').textContent = userProfile.firstName;
+                    historyUserNameEl.textContent = `${userProfile.firstName} ${userProfile.lastName}`;
+                }
+                if (userProfile.profileImage) {
+                    historyProfileImageEl.src = userProfile.profileImage;
+                }
+            }
+
+            historyUserNameEl.style.visibility = 'visible';
+            historyProfileImageEl.style.visibility = 'visible';
+        });
+    </script>
+</body>
+</html>

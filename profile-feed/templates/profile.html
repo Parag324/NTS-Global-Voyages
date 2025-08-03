@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTS Global Voyage - Profile</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* FIX: Hide elements prone to flashing until ready */
+        #user-name, #user-location, #profile-image {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar with Dropdown -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-square">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36">
+                    </div>
+                    <span class="logo-text">NTS Global Voyage</span>
+                </div>
+            </div>
+            
+            <div class="nav-center">
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-ticket"></i> Bookings</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+                <!-- Profile Dropdown Integrated into Nav Center -->
+                <div class="profile-dropdown">
+                    <a href="#" class="nav-link active profile-dropdown-toggle">
+                        <i class="fas fa-user"></i>
+                        <span id="nav-user-name">Profile</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+                        <a href="{{ url_for('redeem') }}" class="dropdown-item">Redeem Points</a>
+                        <a href="{{ url_for('history') }}" class="dropdown-item">History</a>
+                        <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search destinati...">
+                </div>
+                <div class="nav-icons">
+                    <a href="{{ url_for('notifications') }}" class="nav-icon-link"><i class="fas fa-bell"></i></a>
+                    <div class="language-selector">
+                        <i class="fas fa-globe"></i>
+                        <span>EN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Banner -->
+    <div class="profile-banner">
+        <div class="banner-background"></div>
+        <div class="banner-content">
+            <div class="profile-info">
+                <div class="profile-picture">
+                    <img id="profile-image" src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face" alt="Profile Picture">
+                </div>
+                <div class="user-details">
+                    <h1 id="user-name">TravelExplorer</h1>
+                    <p id="user-location" class="location">London, UK</p>
+                    <p class="member-since">Member since 2021</p>
+                    <div class="social-stats">
+                        <span><strong>1.2K</strong> Followers</span>
+                        <span><strong>890</strong> Following</span>
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('edit_profile') }}" class="edit-profile-btn">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Travel Statistics -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <i class="fas fa-globe"></i>
+                <div class="stat-number">32</div>
+                <div class="stat-label">Voyages Completed</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="stat-number">128</div>
+                <div class="stat-label">Places Visited</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-bar"></i>
+                <div class="stat-number">4,560</div>
+                <div class="stat-label">Travel Miles</div>
+            </div>
+        </div>
+
+        <!-- Travel Achievements -->
+        <div class="achievements-section">
+            <h2>Travel Achievements</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card gold">
+                    <i class="fas fa-globe"></i>
+                    <h3>Globe Trotter</h3>
+                    <p>Gold Badge</p>
+                </div>
+                <div class="achievement-card silver">
+                    <i class="fas fa-mountain"></i>
+                    <h3>Culture Explorer</h3>
+                    <p>Silver Badge</p>
+                </div>
+                <div class="achievement-card gold">
+                    <i class="fas fa-camera"></i>
+                    <h3>Photo Master</h3>
+                    <p>Gold Badge</p>
+                </div>
+                <div class="achievement-card bronze">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Eco Traveler</h3>
+                    <p>Bronze Badge</p>
+                </div>
+                <div class="achievement-card silver">
+                    <i class="fas fa-star"></i>
+                    <h3>Local Expert</h3>
+                    <p>Silver Badge</p>
+                </div>
+                <div class="achievement-card bronze">
+                    <i class="fas fa-moon"></i>
+                    <h3>Night Explorer</h3>
+                    <p>Bronze Badge</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Travel Posts -->
+        <div class="posts-section">
+            <div class="posts-header">
+                <h2>Travel Posts</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active">All Posts</button>
+                    <button class="filter-btn">Photos</button>
+                    <button class="filter-btn">Reviews</button>
+                    <button class="filter-btn">Stories</button>
+                </div>
+            </div>
+            <div class="posts-grid">
+                <div class="post-card">
+                    <div class="post-image">
+                        <img src="https://images.unsplash.com/photo-1502602898534-47d6c5c0b0b3?w=400&h=250&fit=crop" alt="Paris">
+                        <div class="post-type photo">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>Paris, France</h3>
+                        <p class="post-time">2 days ago</p>
+                        <div class="post-engagement">
+                            <span><i class="fas fa-heart"></i> 234</span>
+                            <span><i class="fas fa-comment"></i> 45</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-image">
+                        <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&h=250&fit=crop" alt="Santorini">
+                        <div class="post-type review">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>Santorini, Greece</h3>
+                        <p class="post-time">1 week ago</p>
+                        <div class="post-engagement">
+                            <span><i class="fas fa-heart"></i> 156</span>
+                            <span><i class="fas fa-comment"></i> 28</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="post-card">
+                    <div class="post-image">
+                        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="Tokyo">
+                        <div class="post-type story">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>Tokyo, Japan</h3>
+                        <p class="post-time">2 weeks ago</p>
+                        <div class="post-engagement">
+                            <span><i class="fas fa-heart"></i> 342</span>
+                            <span><i class="fas fa-comment"></i> 67</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Level -->
+        <div class="level-section">
+            <h2>Current Level: Platinum Explorer</h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 82%"></div>
+                </div>
+                <div class="progress-text">2,450 / 3,000 points to next level</div>
+                <div class="progress-percentage">82%</div>
+            </div>
+            <div class="level-benefits">
+                <h3>Benefits:</h3>
+                <ul>
+                    <li>Priority Booking Access</li>
+                    <li>Special Rate Discounts</li>
+                    <li>Exclusive Events Access</li>
+                    <li>Dedicated Travel Concierge</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <i class="fas fa-globe"></i>
+                    <span>NTS Global Voyage</span>
+                </div>
+                <p>Discover the world with NTS Global Voyage. Your journey to unforgettable experiences begins here.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">
+                © 2024 NTS Global Voyage. All rights reserved.
+            </div>
+            <div class="social-icons">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-linkedin"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user data
+            const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+            const userNameEl = document.getElementById('user-name');
+            const userLocationEl = document.getElementById('user-location');
+            const profileImageEl = document.getElementById('profile-image');
+            const navUserNameEl = document.getElementById('nav-user-name');
+
+            if (userProfile) {
+                userNameEl.textContent = `${userProfile.firstName || 'Travel'} ${userProfile.lastName || 'Explorer'}`;
+                userLocationEl.textContent = `${userProfile.city || 'London'}, ${userProfile.country || 'UK'}`;
+                if(navUserNameEl) navUserNameEl.textContent = userProfile.firstName || 'Profile';
+
+                if (userProfile.profileImage) {
+                    profileImageEl.src = userProfile.profileImage;
+                }
+            }
+
+            // Make elements visible after loading data
+            userNameEl.style.visibility = 'visible';
+            userLocationEl.style.visibility = 'visible';
+            profileImageEl.style.visibility = 'visible';
+            
+            // Dropdown Toggle
+            const dropdownToggle = document.querySelector('.profile-dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            if(dropdownToggle) {
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('active');
+                });
+            }
+
+            // Close dropdown if clicking outside
+            window.addEventListener('click', function(e) {
+                if (dropdownMenu && dropdownToggle && !dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

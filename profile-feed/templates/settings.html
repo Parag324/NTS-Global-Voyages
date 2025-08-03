@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - NTS Global Voyage</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic styles for a popup/modal */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .popup-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .popup-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
+        }
+        #popup-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        /* Simple form styles for popups */
+        .popup-form .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .popup-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .popup-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        .popup-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="settings-page">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-square">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36">
+                    </div>
+                    <span class="logo-text">NTS Global Voyage</span>
+                </div>
+            </div>
+            <div class="nav-center">
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-ticket"></i> Bookings</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+                <div class="profile-dropdown">
+                    <a href="#" class="nav-link active profile-dropdown-toggle">
+                        <i class="fas fa-user"></i>
+                        <span id="nav-user-name">Profile</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+                        <a href="{{ url_for('redeem') }}" class="dropdown-item">Redeem Points</a>
+                        <a href="{{ url_for('history') }}" class="dropdown-item">History</a>
+                        <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="search-bar"><input type="text" placeholder="Search destinati..."></div>
+                <div class="nav-icons">
+                    <a href="{{ url_for('notifications') }}" class="nav-icon-link"><i class="fas fa-bell"></i></a>
+                    <div class="language-selector"><i class="fas fa-globe"></i><span>EN</span></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Settings Content -->
+    <div class="main-container settings-container">
+        <aside class="settings-sidebar">
+            <nav class="settings-nav">
+                <a href="#account-settings" class="settings-nav-link active"><i class="fas fa-user-cog"></i> Account Settings</a>
+                <a href="#travel-preferences" class="settings-nav-link"><i class="fas fa-plane-departure"></i> Travel Preferences</a>
+                <a href="#payment-methods" class="settings-nav-link"><i class="fas fa-credit-card"></i> Payment Methods</a>
+                <a href="#notifications" class="settings-nav-link"><i class="fas fa-bell"></i> Notifications</a>
+                <a href="#privacy-security" class="settings-nav-link"><i class="fas fa-shield-alt"></i> Privacy & Security</a>
+                <a href="#language-region" class="settings-nav-link"><i class="fas fa-globe-americas"></i> Language & Region</a>
+                <a href="#help-support" class="settings-nav-link"><i class="fas fa-question-circle"></i> Help & Support</a>
+            </nav>
+        </aside>
+        <main class="settings-main">
+            <div class="settings-breadcrumb">
+                <a href="{{ url_for('profile') }}">Home</a> <i class="fas fa-chevron-right"></i> <span>Settings</span>
+            </div>
+            <h1>Settings</h1>
+
+            <section id="account-settings" class="settings-section">
+                <h2>Account Settings</h2>
+                <div class="account-info-card">
+                    <div class="account-info-header">
+                        <img id="settings-profile-image" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=faces" alt="User Avatar">
+                        <div class="account-info-details">
+                            <div class="info-item"><span>Full Name</span><strong id="settings-full-name">John Smith</strong></div>
+                            <div class="info-item"><span>Email</span><strong id="settings-email">john.smith@email.com</strong></div>
+                            <div class="info-item"><span>Phone</span><strong id="settings-phone">+1 (555) 123-4567</strong></div>
+                            <div class="info-item"><span>Location</span><strong id="settings-location">San Francisco, CA</strong></div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('edit_profile') }}" class="edit-profile-link-btn">Edit Profile</a>
+                </div>
+            </section>
+
+            <section id="travel-preferences" class="settings-section">
+                <h2>Travel Preferences</h2>
+                <div class="preferences-grid">
+                    <div class="info-item"><span>Currency</span><strong>USD ($)</strong></div>
+                    <div class="info-item"><span>Language</span><strong>English</strong></div>
+                    <div class="info-item"><span>Time Zone</span><strong>Pacific Time (PT)</strong></div>
+                    <div class="info-item"><span>Seat Preference</span><strong>Window Seat</strong></div>
+                </div>
+            </section>
+
+            <section id="payment-methods" class="settings-section">
+                <h2>Payment Methods</h2>
+                <div class="payment-card default">
+                    <i class="fab fa-cc-visa"></i>
+                    <div class="payment-details">
+                        <strong>Visa ending in 4242</strong>
+                        <span>Expires 12/24</span>
+                    </div>
+                    <span class="default-badge">Default</span>
+                </div>
+                <div class="payment-card">
+                    <i class="fab fa-cc-mastercard"></i>
+                    <div class="payment-details">
+                        <strong>Mastercard ending in 8888</strong>
+                        <span>Expires 09/25</span>
+                    </div>
+                </div>
+                <button id="add-card-btn" class="add-new-card-btn"><i class="fas fa-plus"></i> Add New Card</button>
+            </section>
+
+            <section id="notifications" class="settings-section">
+                <h2>Notification Settings</h2>
+                <div class="notification-item">
+                    <div><i class="fas fa-tag"></i><strong>Deal Alerts</strong></div>
+                    <label class="toggle-switch"><input type="checkbox" id="deal-alerts-toggle" data-setting="dealAlerts"><span class="slider"></span></label>
+                </div>
+                <div class="notification-item">
+                    <div><i class="fas fa-chart-line"></i><strong>Price Drop Alerts</strong></div>
+                    <label class="toggle-switch"><input type="checkbox" id="price-drop-toggle" data-setting="priceDropAlerts"><span class="slider"></span></label>
+                </div>
+                <div class="notification-item">
+                    <div><i class="fas fa-check-circle"></i><strong>Booking Confirmations</strong></div>
+                    <label class="toggle-switch"><input type="checkbox" id="booking-confirmations-toggle" data-setting="bookingConfirmations"><span class="slider"></span></label>
+                </div>
+                <div class="notification-item">
+                    <div><i class="fas fa-suitcase-rolling"></i><strong>Travel Updates</strong></div>
+                    <label class="toggle-switch"><input type="checkbox" id="travel-updates-toggle" data-setting="travelUpdates"><span class="slider"></span></label>
+                </div>
+                <div class="notification-item">
+                    <div><i class="fas fa-newspaper"></i><strong>Newsletter</strong></div>
+                    <label class="toggle-switch"><input type="checkbox" id="newsletter-toggle" data-setting="newsletter"><span class="slider"></span></label>
+                </div>
+            </section>
+
+            <section id="privacy-security" class="settings-section">
+                <h2>Privacy & Security</h2>
+                <a href="#" id="change-password-btn" class="privacy-link">
+                    <strong>Change Password</strong>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="#" id="2fa-btn" class="privacy-link">
+                    <strong>Two-Factor Authentication</strong>
+                    <span>Add an extra layer of security</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="settings-footer">
+        <div class="footer-links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Help Center</a>
+        </div>
+        <div class="copyright">© 2024 TravelEase. All rights reserved.</div>
+    </footer>
+
+    <!-- Popup Modal -->
+    <div id="popup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 id="popup-title">Action</h3>
+                <button id="popup-close" class="popup-close-btn">&times;</button>
+            </div>
+            <div id="popup-body">
+                <!-- Dynamic content goes here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. SETUP & ELEMENT SELECTION ---
+            const popup = document.getElementById('popup');
+            const popupTitle = document.getElementById('popup-title');
+            const popupBody = document.getElementById('popup-body');
+            const popupClose = document.getElementById('popup-close');
+
+            // --- 2. CORE FUNCTIONS ---
+            function showPopup(title, content) {
+                popupTitle.textContent = title;
+                popupBody.innerHTML = content;
+                popup.style.display = 'flex';
+            }
+
+            // --- 3. FUNCTIONAL ACTIONS ---
+            // Add New Card
+            document.getElementById('add-card-btn').addEventListener('click', () => {
+                showPopup('Add New Card', '<p>This feature is for demonstration only. In a real application, this would open a secure payment form.</p>');
+            });
+
+            // Change Password
+            document.getElementById('change-password-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                const formHTML = `
+                    <form class="popup-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password">
+                        </div>
+                        <button type="submit">Update Password</button>
+                    </form>
+                `;
+                showPopup('Change Password', formHTML);
+            });
+
+            // Two-Factor Authentication
+            document.getElementById('2fa-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPopup('Two-Factor Authentication', '<p>To enable 2FA, you would typically scan a QR code with an authenticator app. This is a placeholder.</p>');
+            });
+
+            // --- 4. NOTIFICATION TOGGLES ---
+            const notificationToggles = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
+            
+            // Load saved settings from localStorage
+            function loadNotificationSettings() {
+                const settings = JSON.parse(localStorage.getItem('notificationSettings')) || {};
+                notificationToggles.forEach(toggle => {
+                    // Set default checked state from HTML, then override with saved setting if it exists
+                    const settingName = toggle.dataset.setting;
+                    if (settings[settingName] !== undefined) {
+                        toggle.checked = settings[settingName];
+                    } else {
+                        // If no setting is saved, save the default state from the HTML
+                        saveNotificationSetting(settingName, toggle.checked);
+                    }
+                });
+            }
+
+            // Save a specific setting to localStorage
+            function saveNotificationSetting(name, value) {
+                const settings = JSON.parse(localStorage.getItem('notificationSettings')) || {};
+                settings[name] = value;
+                localStorage.setItem('notificationSettings', JSON.stringify(settings));
+            }
+
+            notificationToggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    saveNotificationSetting(this.dataset.setting, this.checked);
+                });
+            });
+
+            // --- 5. GENERAL PAGE & NAV LOGIC ---
+            popupClose.addEventListener('click', () => popup.style.display = 'none');
+            popup.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
+
+            const dropdownToggle = document.querySelector('.profile-dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            if(dropdownToggle) {
+                dropdownToggle.addEventListener('click', function(e) { e.preventDefault(); dropdownMenu.classList.toggle('active'); });
+            }
+            window.addEventListener('click', function(e) {
+                if (dropdownMenu && dropdownToggle && !dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+
+            const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+            if (userProfile) {
+                if (userProfile.firstName) {
+                    document.getElementById('nav-user-name').textContent = userProfile.firstName;
+                    document.getElementById('settings-full-name').textContent = `${userProfile.firstName} ${userProfile.lastName}`;
+                }
+                if (userProfile.profileImage) {
+                    document.getElementById('settings-profile-image').src = userProfile.profileImage;
+                }
+                document.getElementById('settings-email').textContent = userProfile.email || 'john.smith@email.com';
+                document.getElementById('settings-phone').textContent = userProfile.phone || '+1 (555) 123-4567';
+                document.getElementById('settings-location').textContent = `${userProfile.city || 'San Francisco'}, ${userProfile.state || 'CA'}`;
+            }
+
+            document.querySelectorAll('.settings-nav-link').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.settings-nav-link').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetElement = document.querySelector(this.getAttribute('href'));
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            // --- 6. INITIAL LOAD ---
+            loadNotificationSettings();
+        });
+    </script>
+</body>
+</html>

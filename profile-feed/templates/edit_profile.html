@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - NTS Global Voyage</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Style to hide the default file input button */
+        .hidden-file-input { display: none; }
+        .avatar-upload-label { cursor: pointer; }
+        /* FIX: Hide elements prone to flashing until ready */
+        #header-user-name, #avatar-preview {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body class="edit-profile-page">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                     <div class="logo-square">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NTS Global Voyage Logo" width="36" height="36">
+                    </div>
+                    <span class="logo-text">NTS Global Voyage</span>
+                </div>
+            </div>
+            <div class="nav-center">
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="#" class="nav-link"><i class="fas fa-ticket"></i> Bookings</a>
+                <a href="#" class="nav-link"><i class="fas fa-compass"></i> Explore</a>
+                <a href="#" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+                <div class="profile-dropdown">
+                    <a href="#" class="nav-link active profile-dropdown-toggle">
+                        <i class="fas fa-user"></i>
+                        <span id="nav-user-name">Profile</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('profile') }}" class="dropdown-item">My Profile</a>
+                        <a href="{{ url_for('redeem') }}" class="dropdown-item">Redeem Points</a>
+                        <a href="{{ url_for('history') }}" class="dropdown-item">History</a>
+                        <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="search-bar"><input type="text" placeholder="Search destinati..."></div>
+                <div class="nav-icons">
+                    <a href="{{ url_for('notifications') }}" class="nav-icon-link"><i class="fas fa-bell"></i></a>
+                    <div class="language-selector"><i class="fas fa-globe"></i><span>EN</span></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="edit-profile-container">
+        <header class="edit-profile-header">
+            <div class="edit-profile-avatar">
+                <label for="avatar-upload-input" class="avatar-upload-label">
+                    <img id="avatar-preview" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" alt="Profile Picture">
+                    <span class="avatar-upload-btn"><i class="fas fa-camera"></i></span>
+                </label>
+                <input type="file" id="avatar-upload-input" class="hidden-file-input" accept="image/*">
+            </div>
+            <div class="edit-profile-user-info">
+                <h2 id="header-user-name">Sarah Anderson</h2>
+                <div class="user-meta">
+                    <span class="gold-member">Gold Member</span>
+                    <span class="user-id">ID: GV284751</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="edit-profile-body">
+            <main class="edit-profile-main">
+                <div class="form-section card">
+                    <h3>Personal Information</h3>
+                    <div class="personal-info-form">
+                        <div class="form-row">
+                            <div class="form-group"><label for="first-name">First Name</label><input type="text" id="first-name" value="Sarah"></div>
+                            <div class="form-group"><label for="last-name">Last Name</label><input type="text" id="last-name" value="Anderson"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" value="sarah.anderson@email.com"></div>
+                            <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" value="+1 (555) 123-4567"></div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group"><label for="dob">Date of Birth</label><input type="text" id="dob" value="April 15, 1990"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section card">
+                    <h3>Address</h3>
+                    <div class="address-form">
+                        <div class="form-group"><label for="street-address">Street Address</label><input type="text" id="street-address" value="123 Travel Street"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="city">City</label><input type="text" id="city" value="San Francisco"></div>
+                            <div class="form-group"><label for="state">State/Province</label><input type="text" id="state" value="California"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="country">Country</label><input type="text" id="country" value="United States"></div>
+                            <div class="form-group"><label for="postal-code">Postal Code</label><input type="text" id="postal-code" value="94105"></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-section card">
+                    <h3>Preferences</h3>
+                    <form class="preferences-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="language">Preferred Language</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-language"></i>
+                                    <input type="text" id="language" value="English">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Currency</label>
+                                 <div class="input-with-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <input type="text" id="currency" value="USD ($)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                             <div class="form-group">
+                                <label for="timezone">Time Zone</label>
+                                 <div class="input-with-icon">
+                                     <i class="fas fa-clock"></i>
+                                    <input type="text" id="timezone" value="(GMT-08:00) Pacific Time">
+                                 </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <button id="save-changes-btn" class="save-changes-btn">Save Changes</button>
+            </main>
+
+            <aside class="edit-profile-sidebar">
+                <div class="rewards-status card">
+                    <h4>Rewards Status</h4>
+                    <div class="voyage-points">2,450</div>
+                    <p class="points-label">Voyage Points</p>
+                    <div class="progress-to-platinum">
+                        <div class="progress-info">
+                            <span>Progress to Platinum</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 75%;"></div>
+                        </div>
+                         <p class="progress-sublabel">623 points to Platinum Level</p>
+                    </div>
+                </div>
+
+                <div class="recent-activities card">
+                    <h4>Recent Activities</h4>
+                    <ul>
+                        <li><span>Flight Booking</span><span class="points-gained">+500</span><small>Jan 15, 2024</small></li>
+                        <li><span>Hotel Booking</span><span class="points-gained">+300</span><small>Jan 10, 2024</small></li>
+                        <li><span>Car Rental</span><span class="points-gained">+200</span><small>Jan 08, 2024</small></li>
+                    </ul>
+                </div>
+
+                <div class="connected-accounts card">
+                    <h4>Connected Accounts</h4>
+                    <ul>
+                        <li><i class="fab fa-google"></i><span>Google</span><a href="https://accounts.google.com/" target="_blank" class="status-connected">Connected</a></li>
+                        <li><i class="fab fa-facebook"></i><span>Facebook</span><a href="https://facebook.com/login" target="_blank" class="connect-btn">Connect</a></li>
+                        <li><i class="fab fa-apple"></i><span>Apple</span><a href="https://appleid.apple.com/" target="_blank" class="connect-btn">Connect</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 60px;">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About NTS Global</h4>
+                 <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#">Flight Booking</a></li>
+                    <li><a href="#">Hotel Booking</a></li>
+                    <li><a href="#">Car Rental</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Newsletter</h4>
+                <p>Subscribe to our newsletter for travel updates and exclusive offers.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="copyright">© 2024 NTS Global Voyage. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveButton = document.getElementById('save-changes-btn');
+            const avatarUploadInput = document.getElementById('avatar-upload-input');
+            const avatarPreview = document.getElementById('avatar-preview');
+            const headerUserName = document.getElementById('header-user-name');
+            
+            let userProfile = {};
+
+            function loadProfileData() {
+                const storedProfile = JSON.parse(localStorage.getItem('userProfile'));
+                
+                if (storedProfile) {
+                    userProfile = storedProfile;
+                } else {
+                    userProfile = {
+                        firstName: 'Sarah',
+                        lastName: 'Anderson',
+                        email: 'sarah.anderson@email.com',
+                        phone: '+1 (555) 123-4567',
+                        dob: 'April 15, 1990',
+                        streetAddress: '123 Travel Street',
+                        city: 'San Francisco',
+                        state: 'California',
+                        country: 'United States',
+                        postalCode: '94105',
+                        profileImage: null
+                    };
+                }
+
+                document.getElementById('first-name').value = userProfile.firstName;
+                document.getElementById('last-name').value = userProfile.lastName;
+                document.getElementById('email').value = userProfile.email;
+                document.getElementById('phone').value = userProfile.phone;
+                document.getElementById('dob').value = userProfile.dob;
+                document.getElementById('street-address').value = userProfile.streetAddress;
+                document.getElementById('city').value = userProfile.city;
+                document.getElementById('state').value = userProfile.state;
+                document.getElementById('country').value = userProfile.country;
+                document.getElementById('postal-code').value = userProfile.postalCode;
+                
+                headerUserName.textContent = `${userProfile.firstName} ${userProfile.lastName}`;
+                
+                if (userProfile.profileImage) {
+                    avatarPreview.src = userProfile.profileImage;
+                } else {
+                    avatarPreview.src = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces';
+                }
+
+                headerUserName.style.visibility = 'visible';
+                avatarPreview.style.visibility = 'visible';
+            }
+            
+            loadProfileData();
+
+            avatarUploadInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const result = e.target.result;
+                        avatarPreview.src = result;
+                        userProfile.profileImage = result; 
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            saveButton.addEventListener('click', function() {
+                userProfile.firstName = document.getElementById('first-name').value;
+                userProfile.lastName = document.getElementById('last-name').value;
+                userProfile.email = document.getElementById('email').value;
+                userProfile.phone = document.getElementById('phone').value;
+                userProfile.dob = document.getElementById('dob').value;
+                userProfile.streetAddress = document.getElementById('street-address').value;
+                userProfile.city = document.getElementById('city').value;
+                userProfile.state = document.getElementById('state').value;
+                userProfile.country = document.getElementById('country').value;
+                userProfile.postalCode = document.getElementById('postal-code').value;
+
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                window.location.href = "{{ url_for('profile') }}";
+            });
+
+            const dropdownToggle = document.querySelector('.profile-dropdown-toggle');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            if(dropdownToggle) {
+                dropdownToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle('active');
+                });
+            }
+            window.addEventListener('click', function(e) {
+                if (dropdownMenu && dropdownToggle && !dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+
+            const navUserNameEl = document.getElementById('nav-user-name');
+            if (userProfile && userProfile.firstName) {
+                navUserNameEl.textContent = userProfile.firstName;
+            }
+        });
+    </script>
+</body>
+</html>
