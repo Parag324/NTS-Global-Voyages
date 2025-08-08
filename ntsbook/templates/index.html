@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NTS Global Voyage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-[#f0f4ff] text-gray-900">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center space-x-4">
+          <img src="{{ url_for('static', filename='images/nts_global_logo.png') }}" alt="NTS Global Voyage logo" class="w-8 h-8" />
+          <span class="font-semibold text-lg text-[#1e293b]">NTS Global Voyage</span>
+          <ul class="hidden md:flex space-x-6 text-sm text-gray-600 font-medium">
+            <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-home"></i><span>Home</span></li>
+            <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-calendar-check"></i><span><a href="/bookings" class="hover:text-gray-900">Bookings</a></span></li>
+            <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-compass"></i><span>Explore</span></li>
+            <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-chart-bar"></i><span>Reports</span></li>
+            <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-user"></i><span>Profile</span></li>
+          </ul>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative hidden sm:block">
+            <input type="text" placeholder="Search destinations..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 text-sm w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+          </div>
+          <button class="text-gray-600 hover:text-gray-900 text-lg"><i class="fas fa-bell"></i></button>
+          <button class="flex items-center text-sm text-gray-600 hover:text-gray-900 space-x-1">
+            <span>EN</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+    <section class="bg-[#9ca3ff] rounded-md py-8 px-6 text-center text-[#1e293b] font-semibold text-lg md:text-xl">
+      <h1 class="font-bold">Book Your Journey</h1>
+      <p class="text-sm md:text-base font-normal mt-1">Select your preferred mode of transportation</p>
+    </section>
+
+    <!-- Booking Options -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Air -->
+      <div class="bg-[#e6ebff] p-5 rounded-md shadow-sm relative">
+        <div>
+          <i class="fas fa-plane text-[#1e40af] text-2xl mb-2"></i>
+          <h2 class="font-semibold">Air Travel</h2>
+          <p class="text-xs text-gray-600 mt-0.5">International & Domestic Flights</p>
+          <p class="text-xs text-gray-600 mt-2"><i class="fas fa-circle text-xs text-gray-600 mr-1"></i>1000+ Airlines</p>
+        </div>
+        <a href="/flight" class="absolute top-3 right-3 bg-white border border-gray-300 rounded px-3 py-1 text-xs font-semibold hover:bg-gray-100">Book Now</a>
+      </div>
+
+      <!-- Train -->
+      <div class="bg-[#ecfdf5] p-5 rounded-md shadow-sm relative">
+        <div>
+          <i class="fas fa-train text-[#22c55e] text-2xl mb-2"></i>
+          <h2 class="font-semibold">Rail Journey</h2>
+          <p class="text-xs text-gray-600 mt-0.5">Inter-city & Express Trains</p>
+          <p class="text-xs text-gray-600 mt-2"><i class="fas fa-circle text-xs text-gray-600 mr-1"></i>500+ Routes</p>
+        </div>
+        <a href="/train" class="absolute top-3 right-3 bg-white border border-gray-300 rounded px-3 py-1 text-xs font-semibold hover:bg-gray-100">Book Now</a>
+      </div>
+
+      <!-- Bus -->
+      <div class="bg-[#f3e8ff] p-5 rounded-md shadow-sm relative">
+        <div>
+          <i class="fas fa-bus text-[#7c3aed] text-2xl mb-2"></i>
+          <h2 class="font-semibold">Bus Travel</h2>
+          <p class="text-xs text-gray-600 mt-0.5">City & Long Distance</p>
+          <p class="text-xs text-gray-600 mt-2"><i class="fas fa-circle text-xs text-gray-600 mr-1"></i>2000+ Destinations</p>
+        </div>
+        <a href="/bus" class="absolute top-3 right-3 bg-white border border-gray-300 rounded px-3 py-1 text-xs font-semibold hover:bg-gray-100">Book Now</a>
+      </div>
+
+      <!-- Local -->
+      <div class="bg-[#ffedd5] p-5 rounded-md shadow-sm relative">
+        <div>
+          <i class="fas fa-car text-[#ea580c] text-2xl mb-2"></i>
+          <h2 class="font-semibold">Local Transport</h2>
+          <p class="text-xs text-gray-600 mt-0.5">Taxi & Car Services</p>
+          <p class="text-xs text-gray-600 mt-2"><i class="fas fa-circle text-xs text-gray-600 mr-1"></i>Available 24/7</p>
+        </div>
+        <a href="/ride" class="absolute top-3 right-3 bg-white border border-gray-300 rounded px-3 py-1 text-xs font-semibold hover:bg-gray-100">Book Now</a>
+      </div>
+    </section>
+
+    <!-- Info Boxes -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Recent Bookings -->
+      <div class="bg-white p-4 rounded-md shadow-sm text-sm">
+        <h3 class="font-semibold mb-3">Recent Bookings</h3>
+        <ul class="space-y-2">
+          <li class="flex justify-between"><span>New York → London</span><span class="text-gray-500">Dec 15</span></li>
+          <li class="flex justify-between"><span>Paris → Rome</span><span class="text-gray-500">Dec 20</span></li>
+          <li class="flex justify-between"><span>Tokyo → Seoul</span><span class="text-gray-500">Dec 25</span></li>
+        </ul>
+      </div>
+
+      <!-- Popular Routes -->
+      <div class="bg-white p-4 rounded-md shadow-sm text-sm">
+        <h3 class="font-semibold mb-3">Popular Routes</h3>
+        <ul class="space-y-2">
+          <li class="flex justify-between"><span>New York → London</span><span class="text-yellow-500 font-semibold">$499</span></li>
+          <li class="flex justify-between"><span>Paris → Barcelona</span><span class="text-yellow-500 font-semibold">$299</span></li>
+          <li class="flex justify-between"><span>Dubai → Singapore</span><span class="text-yellow-500 font-semibold">$799</span></li>
+        </ul>
+      </div>
+
+      <!-- Offers -->
+      <div class="bg-white p-4 rounded-md shadow-sm text-sm">
+        <h3 class="font-semibold mb-3">Special Offers</h3>
+        <ul class="space-y-2">
+          <li><strong>Early Bird</strong><br/><span class="text-xs">Book 60 days in advance</span></li>
+          <li><strong>Group Travel</strong><br/><span class="text-xs">Save up to 20%</span></li>
+          <li><strong>Last Minute Deals</strong><br/><span class="text-xs">Up to 30% off</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Help Section -->
+    <section class="bg-[#1e3a8a] text-white p-6 rounded-md mt-8 flex flex-col md:flex-row items-center justify-between">
+      <div>
+        <h4 class="font-semibold text-lg mb-2">Need Help?</h4>
+        <p class="text-sm">Customer support available 24/7.</p>
+        <div class="mt-3 flex space-x-6 text-sm">
+          <div><i class="fas fa-phone-alt mr-2"></i>1-800-123-4567</div>
+          <div><i class="fas fa-envelope mr-2"></i>support@ntsglobal.com</div>
+        </div>
+      </div>
+      <img src="https://storage.googleapis.com/a1aa/image/ab2c615a-bb33-4460-4236-ad05f0215fd6.jpg" alt="Agent" class="w-24 h-24 rounded-md mt-4 md:mt-0 object-cover"/>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#1e293b] text-gray-300 mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-4 gap-8">
+      <div>
+        <h5 class="font-semibold mb-4 text-white">About NTS</h5>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-semibold mb-4 text-white">Support</h5>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-semibold mb-4 text-white">Services</h5>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#">Flight Booking</a></li>
+          <li><a href="#">Hotel Booking</a></li>
+          <li><a href="#">Car Rental</a></li>
+          <li><a href="#">Insurance</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-semibold mb-4 text-white">Newsletter</h5>
+        <form class="flex space-x-2" action="/subscribe" method="POST">
+          <input type="email" name="email" placeholder="Enter your email" class="rounded-md px-3 py-2 text-gray-900 text-sm w-full" required/>
+          <button type="submit" class="bg-yellow-400 text-gray-900 font-semibold rounded-md px-4 py-2 hover:bg-yellow-300">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="border-t border-gray-700 text-center py-4 text-xs text-gray-400">
+      © 2024 NTS Global Voyage. All rights reserved.
+      <div class="mt-2 space-x-4">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+
+
+
+

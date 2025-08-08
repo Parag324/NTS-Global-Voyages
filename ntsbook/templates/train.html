@@ -1,0 +1,938 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Book Your Train Journey
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-white text-gray-900">
+  <!-- Header -->
+  <header class="border-b border-gray-200">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex items-center justify-between h-16">
+     <div class="flex items-center space-x-8">
+      <div class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='images/nts_global_logo.png') }}" alt="NTS Global Voyage logo" class="w-8 h-8" />
+       <span class="font-semibold text-sm text-blue-900">
+        NTS Global Voyage
+       </span>
+      </div>
+      <ul class="hidden md:flex space-x-6 text-sm font-medium text-gray-700">
+       <li>
+        <a class="hover:text-blue-900" href="/" id="home-nav">
+         Home
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-blue-900" href="{{ url_for('bookings_page') }}">
+         Bookings
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-blue-900" href="#">
+         Explore
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-blue-900" href="#">
+         Reports
+        </a>
+       </li>
+       <li class="relative group">
+        <button aria-expanded="false" aria-haspopup="true" class="flex items-center space-x-1 hover:text-blue-900 focus:outline-none">
+         <span>
+          Profile
+         </span>
+         <i class="fas fa-chevron-down text-xs">
+         </i>
+        </button>
+        <!-- Dropdown not visible in screenshot, so no dropdown content -->
+       </li>
+      </ul>
+     </div>
+     <div class="flex items-center space-x-4">
+      <div class="relative text-gray-400">
+       <input class="pl-8 pr-3 py-1.5 rounded border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" placeholder="Search destinations" type="text"/>
+       <i class="fas fa-search absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+       </i>
+      </div>
+      <button aria-label="Notifications" class="text-gray-600 hover:text-gray-900">
+       <i class="fas fa-bell text-lg">
+       </i>
+      </button>
+      <button aria-label="Language selection" class="flex items-center space-x-1 text-gray-600 hover:text-gray-900 text-sm font-medium">
+       <span>
+        EN
+       </span>
+       <i class="fas fa-chevron-down text-xs">
+       </i>
+      </button>
+     </div>
+    </nav>
+   </div>
+  </header>
+  <!-- Main content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-16">
+   <h1 class="text-2xl font-semibold text-gray-900">
+    Book Your Train Journey
+   </h1>
+   <p class="text-sm text-gray-600 mt-1">
+    Find the perfect train connection for your travel needs
+   </p>
+   <!-- Booking form -->
+   <form aria-label="Train booking form" class="mt-6 bg-white border border-gray-200 rounded-lg shadow-sm p-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-end">
+    <div class="sm:col-span-4">
+     <label class="block text-xs font-medium text-gray-700 mb-1" for="from">
+      From
+     </label>
+     <div class="relative">
+      <input class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" id="from" name="from" placeholder="Enter departure city" type="text"/>
+      <button aria-label="Swap From and To" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" type="button">
+       <i class="fas fa-exchange-alt">
+       </i>
+      </button>
+     </div>
+    </div>
+    <div class="sm:col-span-2">
+     <label class="block text-xs font-medium text-gray-700 mb-1" for="date">
+      Date
+     </label>
+     <input class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" id="date" name="date" type="date"/>
+    </div>
+    <div class="sm:col-span-2">
+     <label class="block text-xs font-medium text-gray-700 mb-1" for="time">
+      Time
+     </label>
+     <select class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" id="time" name="time">
+      <option>
+       Any time
+      </option>
+      <option>
+       Morning
+      </option>
+      <option>
+       Afternoon
+      </option>
+      <option>
+       Evening
+      </option>
+     </select>
+    </div>
+    <div class="sm:col-span-4">
+     <label class="block text-xs font-medium text-gray-700 mb-1" for="to">
+      To
+     </label>
+     <input class="w-full border border-gray-300 rounded-md py-2 px-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" id="to" name="to" placeholder="Enter arrival city" type="text"/>
+    </div>
+    <div class="sm:col-span-2">
+     <label class="block text-xs font-medium text-gray-700 mb-1" for="passengers">
+      Passengers
+     </label>
+     <div class="relative">
+      <select class="w-full border border-gray-300 rounded-md py-2 pl-8 pr-3 text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600" id="passengers" name="passengers">
+       <option>
+        1 Adult
+       </option>
+       <option>
+        2 Adults
+       </option>
+       <option>
+        3 Adults
+       </option>
+       <option>
+        4 Adults
+       </option>
+      </select>
+      <i class="fas fa-user absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+      </i>
+     </div>
+    </div>
+    <div class="sm:col-span-2">
+     <button class="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-md py-2" type="submit">
+      Search Trains
+     </button>
+    </div>
+   </form>
+   <!-- Filters -->
+   <div class="flex items-center space-x-3 mt-6 text-xs text-gray-600 font-medium">
+    <button class="flex items-center space-x-1 border border-gray-300 rounded px-2 py-1 hover:bg-gray-100" type="button">
+     <i class="fas fa-filter text-xs">
+     </i>
+     <span>
+      Filters
+     </span>
+    </button>
+    <button class="border border-gray-300 rounded px-2 py-1 hover:bg-gray-100" type="button">
+     Direct Routes
+    </button>
+    <button class="border border-gray-300 rounded px-2 py-1 hover:bg-gray-100" type="button">
+     Fastest
+    </button>
+    <button class="border border-gray-300 rounded px-2 py-1 hover:bg-gray-100" type="button">
+     Cheapest
+    </button>
+   </div>
+   <!-- Available trains header -->
+   <div class="flex justify-between items-center mt-6 text-sm text-gray-700 font-semibold">
+    <div>
+     Available Trains
+    </div>
+    <div class="flex items-center space-x-2">
+     <div class="text-xs font-normal text-gray-500">
+      12 trains found
+     </div>
+     <button class="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
+      <span>
+       Sort by Duration
+      </span>
+      <i class="fas fa-chevron-down text-xs">
+      </i>
+     </button>
+    </div>
+   </div>
+   <!-- Train cards -->
+   <section class="space-y-4 mt-4">
+    <!-- Repeat 3 times -->
+    <article class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+     <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 flex-1">
+      <div class="flex items-center space-x-2 min-w-[120px]">
+       <div class="text-lg font-semibold text-gray-900">
+        07:30
+       </div>
+       <div class="text-xs text-gray-500">
+        New York
+       </div>
+      </div>
+      <div class="text-xs text-gray-400 font-medium">
+       2h 30m
+      </div>
+      <div class="text-xs text-gray-500 font-semibold px-2 py-0.5 border border-gray-300 rounded ml-2">
+       Direct
+      </div>
+      <div class="flex items-center space-x-3 text-gray-400 text-xs ml-4 sm:ml-0 mt-2 sm:mt-0 flex-wrap">
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-chair">
+        </i>
+        <span>
+         42 seats left
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-wifi">
+        </i>
+        <span>
+         Free WiFi
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-utensils">
+        </i>
+        <span>
+         Restaurant
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-couch">
+        </i>
+        <span>
+         Extra Legroom
+        </span>
+       </div>
+      </div>
+     </div>
+     <div class="flex items-center space-x-6">
+      <div class="text-right">
+       <div class="text-lg font-semibold text-gray-900">
+        $95
+       </div>
+       <div class="text-xs text-gray-500">
+        per person
+       </div>
+      </div>
+      <button class="bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold rounded-md px-6 py-2" type="button">
+       Select
+      </button>
+     </div>
+    </article>
+    <article class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+     <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 flex-1">
+      <div class="flex items-center space-x-2 min-w-[120px]">
+       <div class="text-lg font-semibold text-gray-900">
+        07:30
+       </div>
+       <div class="text-xs text-gray-500">
+        New York
+       </div>
+      </div>
+      <div class="text-xs text-gray-400 font-medium">
+       2h 30m
+      </div>
+      <div class="text-xs text-gray-500 font-semibold px-2 py-0.5 border border-gray-300 rounded ml-2">
+       Direct
+      </div>
+      <div class="flex items-center space-x-3 text-gray-400 text-xs ml-4 sm:ml-0 mt-2 sm:mt-0 flex-wrap">
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-chair">
+        </i>
+        <span>
+         42 seats left
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-wifi">
+        </i>
+        <span>
+         Free WiFi
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-utensils">
+        </i>
+        <span>
+         Restaurant
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-couch">
+        </i>
+        <span>
+         Extra Legroom
+        </span>
+       </div>
+      </div>
+     </div>
+     <div class="flex items-center space-x-6">
+      <div class="text-right">
+       <div class="text-lg font-semibold text-gray-900">
+        $195
+       </div>
+       <div class="text-xs text-gray-500">
+        per person
+       </div>
+      </div>
+      <button class="bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold rounded-md px-6 py-2" type="button">
+       Select
+      </button>
+     </div>
+    </article>
+    <article class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+     <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 flex-1">
+      <div class="flex items-center space-x-2 min-w-[120px]">
+       <div class="text-lg font-semibold text-gray-900">
+        07:30
+       </div>
+       <div class="text-xs text-gray-500">
+        New York
+       </div>
+      </div>
+      <div class="text-xs text-gray-400 font-medium">
+       2h 30m
+      </div>
+      <div class="text-xs text-gray-500 font-semibold px-2 py-0.5 border border-gray-300 rounded ml-2">
+       Direct
+      </div>
+      <div class="flex items-center space-x-3 text-gray-400 text-xs ml-4 sm:ml-0 mt-2 sm:mt-0 flex-wrap">
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-chair">
+        </i>
+        <span>
+         42 seats left
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-wifi">
+        </i>
+        <span>
+         Free WiFi
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-utensils">
+        </i>
+        <span>
+         Restaurant
+        </span>
+       </div>
+       <div class="flex items-center space-x-1">
+        <i class="fas fa-couch">
+        </i>
+        <span>
+         Extra Legroom
+        </span>
+       </div>
+      </div>
+     </div>
+     <div class="flex items-center space-x-6">
+      <div class="text-right">
+       <div class="text-lg font-semibold text-gray-900">
+        $45
+       </div>
+       <div class="text-xs text-gray-500">
+        per person
+       </div>
+      </div>
+      <button class="bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold rounded-md px-6 py-2" type="button">
+       Select
+      </button>
+     </div>
+    </article>
+   </section>
+   <!-- Price Comparison -->
+   <section aria-label="Price Comparison" class="mt-10 bg-blue-50 border border-blue-100 rounded-lg p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="bg-white rounded-md p-4 border border-blue-100">
+     <h3 class="text-sm font-semibold text-gray-900 mb-2">
+      Economy
+     </h3>
+     <dl class="text-xs text-gray-700 space-y-1">
+      <div class="flex justify-between">
+       <dt>
+        Price per person
+       </dt>
+       <dd class="font-semibold">
+        $45
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Seat type
+       </dt>
+       <dd>
+        Standard
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Meals included
+       </dt>
+       <dd>
+        No
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        WiFi
+       </dt>
+       <dd>
+        Yes
+       </dd>
+      </div>
+     </dl>
+    </div>
+    <div class="bg-white rounded-md p-4 border border-blue-100">
+     <h3 class="text-sm font-semibold text-gray-900 mb-2">
+      Business
+     </h3>
+     <dl class="text-xs text-gray-700 space-y-1">
+      <div class="flex justify-between">
+       <dt>
+        Price per person
+       </dt>
+       <dd class="font-semibold">
+        $95
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Seat type
+       </dt>
+       <dd>
+        Extra Legroom
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Meals included
+       </dt>
+       <dd>
+        Yes
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        WiFi
+       </dt>
+       <dd>
+        Yes
+       </dd>
+      </div>
+     </dl>
+    </div>
+    <div class="bg-white rounded-md p-4 border border-blue-100">
+     <h3 class="text-sm font-semibold text-gray-900 mb-2">
+      First Class
+     </h3>
+     <dl class="text-xs text-gray-700 space-y-1">
+      <div class="flex justify-between">
+       <dt>
+        Price per person
+       </dt>
+       <dd class="font-semibold">
+        $195
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Seat type
+       </dt>
+       <dd>
+        Premium
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        Meals included
+       </dt>
+       <dd>
+        Yes
+       </dd>
+      </div>
+      <div class="flex justify-between">
+       <dt>
+        WiFi
+       </dt>
+       <dd>
+        Yes
+       </dd>
+      </div>
+     </dl>
+    </div>
+   </section>
+   <!-- Info cards -->
+   <section class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-gray-700">
+    <article class="bg-white border border-gray-200 rounded-lg p-4 flex items-start space-x-3">
+     <i class="far fa-star text-blue-900 text-xl mt-1">
+     </i>
+     <div>
+      <h4 class="font-semibold text-gray-900 mb-1">
+       Best Time to Book
+      </h4>
+      <p>
+       Book 60 days in advance for the best prices
+      </p>
+     </div>
+    </article>
+    <article class="bg-white border border-gray-200 rounded-lg p-4 flex items-start space-x-3">
+     <i class="fas fa-shield-alt text-blue-900 text-xl mt-1">
+     </i>
+     <div>
+      <h4 class="font-semibold text-gray-900 mb-1">
+       Price Guarantee
+      </h4>
+      <p>
+       Find a lower price? We'll match it!
+      </p>
+     </div>
+    </article>
+    <article class="bg-white border border-gray-200 rounded-lg p-4 flex items-start space-x-3">
+     <i class="fas fa-search text-blue-900 text-xl mt-1">
+     </i>
+     <div>
+      <h4 class="font-semibold text-gray-900 mb-1">
+       Flexible Search
+      </h4>
+      <p>
+       Compare prices across different dates
+      </p>
+     </div>
+    </article>
+   </section>
+   <!-- Booking Modal -->
+   <div id="bookingModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden items-center justify-center">
+   <div class="bg-white rounded-lg w-full max-w-md p-6 relative">
+    <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-400 hover:text-gray-700">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 class="text-lg font-semibold mb-4 text-gray-800">Train Booking</h2>
+    <form id="bookingForm" class="space-y-4">
+      <input type="text" name="name" required placeholder="Full Name" class="w-full border rounded px-3 py-2 text-sm" />
+      <input type="email" name="email" required placeholder="Email Address" class="w-full border rounded px-3 py-2 text-sm" />
+      <input type="tel" name="phone" required placeholder="Phone Number" class="w-full border rounded px-3 py-2 text-sm" />
+      <select id="passengerCount" name="passengerCount" required class="w-full border rounded px-3 py-2 text-sm">
+        <option value="" disabled selected>Passengers</option>
+        <option value="1">1 Passenger</option>
+        <option value="2">2 Passengers</option>
+        <option value="3">3 Passengers</option>
+        <option value="4">4 Passengers</option>
+        <option value="5">5 Passengers</option>
+        <option value="6">6 Passengers</option>
+        <option value="7">7 Passengers</option>
+      </select>
+      <div id="passengerDetails"></div>
+      <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white py-2 rounded text-sm font-semibold">Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
+  </main>
+  <!-- Footer -->
+  <footer class="bg-blue-900 text-blue-100">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-4 gap-8">
+    <div>
+     <h2 class="font-semibold text-lg mb-3">
+      NTS Global Voyage
+     </h2>
+     <p class="text-xs leading-relaxed max-w-[220px]">
+      Making train travel accessible and enjoyable for everyone.
+     </p>
+    </div>
+    <div>
+     <h3 class="font-semibold mb-3 text-sm">
+      Company
+     </h3>
+     <ul class="space-y-2 text-xs">
+      <li>
+       <a class="hover:underline" href="#">
+        About Us
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Careers
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Press
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Blog
+       </a>
+      </li>
+     </ul>
+    </div>
+    <div>
+     <h3 class="font-semibold mb-3 text-sm">
+      Support
+     </h3>
+     <ul class="space-y-2 text-xs">
+      <li>
+       <a class="hover:underline" href="#">
+        Help Center
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Contact Us
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Refund Policy
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Terms of Service
+       </a>
+      </li>
+     </ul>
+    </div>
+    <div>
+     <h3 class="font-semibold mb-3 text-sm">
+      Legal
+     </h3>
+     <ul class="space-y-2 text-xs">
+      <li>
+       <a class="hover:underline" href="#">
+        Privacy Policy
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Terms &amp; Conditions
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Cookie Policy
+       </a>
+      </li>
+      <li>
+       <a class="hover:underline" href="#">
+        Accessibility
+       </a>
+      </li>
+     </ul>
+    </div>
+   </div>
+   <div class="border-t border-blue-800 text-center text-xs py-4">
+    © 2024 NTS Global Voyage. All rights reserved.
+   </div>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- HOME NAVIGATION ---
+      const homeNav = document.getElementById('home-nav');
+      if (homeNav) {
+        homeNav.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.location.href = '/';
+        });
+      }
+
+      // Train data
+      const trains = [
+        { time: "07:30", from: "New York", to: "Washington", duration: 150, direct: true, price: 95, wifi: true, meals: true, legroom: true, seats: 42 },
+        { time: "09:00", from: "Boston", to: "Philadelphia", duration: 180, direct: false, price: 45, wifi: false, meals: false, legroom: false, seats: 35 },
+        { time: "11:15", from: "New York", to: "Baltimore", duration: 120, direct: true, price: 195, wifi: true, meals: true, legroom: true, seats: 28 },
+        { time: "13:45", from: "Chicago", to: "Detroit", duration: 240, direct: true, price: 75, wifi: true, meals: false, legroom: true, seats: 15 },
+        { time: "15:20", from: "Los Angeles", to: "San Francisco", duration: 180, direct: true, price: 125, wifi: true, meals: true, legroom: true, seats: 8 },
+        { time: "17:00", from: "Miami", to: "Orlando", duration: 90, direct: true, price: 35, wifi: false, meals: false, legroom: false, seats: 55 },
+        { time: "19:30", from: "Seattle", to: "Portland", duration: 120, direct: true, price: 65, wifi: true, meals: false, legroom: true, seats: 22 },
+        { time: "21:15", from: "Denver", to: "Salt Lake City", duration: 300, direct: false, price: 85, wifi: true, meals: true, legroom: false, seats: 12 }
+      ];
+
+      let baseList = [...trains];
+      let filteredList = [...trains];
+      let currentList = [...trains];
+
+      const trainSection = document.querySelector("section.space-y-4");
+      const resultCount = document.querySelector(".text-xs.font-normal.text-gray-500");
+      const [ , directBtn, fastestBtn, cheapestBtn ] = document.querySelectorAll(".flex.items-center.space-x-3 button");
+      const sortBtn = document.querySelector(".flex.items-center.space-x-1.text-gray-600");
+      
+      // Form elements
+      const trainForm = document.querySelector('form[aria-label="Train booking form"]');
+      const fromInput = document.getElementById('from');
+      const toInput = document.getElementById('to');
+      const dateInput = document.getElementById('date');
+      const timeInput = document.getElementById('time');
+      const passengersInput = document.getElementById('passengers');
+      
+      // Initially hide train results
+      trainSection.style.display = 'none';
+
+      function renderTrains(list) {
+        trainSection.innerHTML = "";
+        resultCount.textContent = `${list.length} trains found`;
+        trainSection.style.display = 'block';
+
+        if (list.length === 0) {
+          trainSection.innerHTML = `<div class="text-center text-red-500 font-semibold py-4">🚆 No trains available for this route</div>`;
+          return;
+        }
+
+        list.forEach((train, index) => {
+          const html = `
+            <article class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 flex-1">
+                <div class="flex flex-col min-w-[150px]">
+                  <div class="text-lg font-semibold text-gray-900">${train.time}</div>
+                  <div class="text-xs text-gray-500">${train.from} → ${train.to}</div>
+                </div>
+                <div class="text-xs text-gray-400 font-medium">${Math.floor(train.duration / 60)}h ${train.duration % 60}m</div>
+                ${train.direct ? `<div class="text-xs text-gray-500 font-semibold px-2 py-0.5 border border-gray-300 rounded ml-2">Direct</div>` : ""}
+                <div class="flex items-center space-x-3 text-gray-400 text-xs ml-4 sm:ml-0 mt-2 sm:mt-0 flex-wrap">
+                  <div class="flex items-center space-x-1"><i class="fas fa-chair"></i><span>${train.seats} seats left</span></div>
+                  ${train.wifi ? `<div class="flex items-center space-x-1"><i class="fas fa-wifi"></i><span>Free WiFi</span></div>` : ""}
+                  ${train.meals ? `<div class="flex items-center space-x-1"><i class="fas fa-utensils"></i><span>Restaurant</span></div>` : ""}
+                  ${train.legroom ? `<div class="flex items-center space-x-1"><i class="fas fa-couch"></i><span>Extra Legroom</span></div>` : ""}
+                </div>
+              </div>
+              <div class="flex items-center space-x-6">
+                <div class="text-right">
+                  <div class="text-lg font-semibold text-gray-900">$${train.price}</div>
+                  <div class="text-xs text-gray-500">per person</div>
+                </div>
+                <button class="select-btn bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold rounded-md px-6 py-2" data-index="${index}">Select</button>
+              </div>
+            </article>`;
+          trainSection.innerHTML += html;
+        });
+
+        document.querySelectorAll('.select-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            const idx = e.target.getAttribute("data-index");
+            openBookingModal(currentList[idx]);
+          });
+        });
+      }
+
+      function openBookingModal(train) {
+        const modal = document.createElement('div');
+        modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+        modal.innerHTML = `
+          <div class="bg-white rounded-lg p-6 w-[90%] max-w-lg shadow-xl relative">
+            <h2 class="text-lg font-semibold mb-4">Book Train: ${train.from} → ${train.to} (${train.time})</h2>
+            <form id="bookingForm">
+              <input type="text" name="name" placeholder="Your Name" required class="w-full mb-2 border p-2 rounded" />
+              <input type="email" name="email" placeholder="Email" required class="w-full mb-2 border p-2 rounded" />
+              <input type="tel" name="phone" placeholder="Phone Number" required class="w-full mb-2 border p-2 rounded" />
+              <input type="number" id="passengerCount" min="1" max="${train.seats}" value="1" class="w-full mb-2 border p-2 rounded" />
+              <div id="passengerFields"></div>
+              <div class="flex justify-end space-x-3 mt-4">
+                <button type="button" id="cancelBtn" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-900 text-white rounded">Confirm</button>
+              </div>
+            </form>
+          </div>`;
+
+        document.body.appendChild(modal);
+        const passengerCountInput = modal.querySelector("#passengerCount");
+        const passengerFields = modal.querySelector("#passengerFields");
+
+        function updatePassengerFields() {
+          const count = parseInt(passengerCountInput.value);
+          passengerFields.innerHTML = "";
+          for (let i = 1; i <= count; i++) {
+            passengerFields.innerHTML += `
+              <div class="mb-2 border p-2 rounded">
+                <strong>Passenger ${i}</strong><br/>
+                <input name="p${i}Name" placeholder="Name" required class="w-full mb-1 border p-1 rounded" />
+                <input type="number" name="p${i}Age" placeholder="Age" required class="w-full mb-1 border p-1 rounded" />
+                <input name="p${i}Seat" placeholder="Seat Number" required class="w-full border p-1 rounded" />
+              </div>`;
+          }
+        }
+
+        updatePassengerFields();
+        passengerCountInput.addEventListener('input', updatePassengerFields);
+        modal.querySelector("#cancelBtn").addEventListener('click', () => modal.remove());
+        modal.querySelector("#bookingForm").addEventListener('submit', e => {
+          e.preventDefault();
+          
+          // Get form data
+          const formData = new FormData(e.target);
+          const passengerCount = parseInt(passengerCountInput.value);
+          
+          // Prepare booking data
+          const bookingData = {
+            destination: `${train.from} → ${train.to}`,
+            dates: 'TBD',
+            price: `$${train.price * passengerCount}`,
+            travelers: passengerCount,
+            type: 'train',
+            passenger_name: formData.get('name'),
+            passenger_email: formData.get('email'),
+            passenger_phone: formData.get('phone'),
+            image: 'https://storage.googleapis.com/a1aa/image/35f3c72d-6fb9-46c4-5e04-90f5aca67e50.jpg'
+          };
+
+          // Send booking to backend
+          fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert("✅ Booking Confirmed! Redirecting to My Bookings...");
+              modal.remove();
+              setTimeout(() => {
+                window.location.href = '/bookings';
+              }, 1000);
+            } else {
+              alert("❌ Booking failed: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error creating booking:', error);
+            alert("❌ Booking failed. Please try again.");
+          });
+        });
+      }
+
+      // Form submission handling
+      trainForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const from = fromInput.value.toLowerCase().trim();
+        const to = toInput.value.toLowerCase().trim();
+        const date = dateInput.value;
+        const time = timeInput.value;
+        const passengers = passengersInput.value;
+        
+        console.log('Searching for trains:', { from, to, date, time, passengers });
+        
+        // Filter trains based on search criteria
+        let searchResults = baseList.filter(train => {
+          const fromMatch = train.from.toLowerCase().includes(from);
+          const toMatch = train.to.toLowerCase().includes(to);
+          return fromMatch && toMatch;
+        });
+        
+        // Apply time filter if selected
+        if (time && time !== 'Any time') {
+          const timeMap = {
+            'Morning': train => parseInt(train.time.split(':')[0]) < 12,
+            'Afternoon': train => parseInt(train.time.split(':')[0]) >= 12 && parseInt(train.time.split(':')[0]) < 17,
+            'Evening': train => parseInt(train.time.split(':')[0]) >= 17
+          };
+          if (timeMap[time]) {
+            searchResults = searchResults.filter(timeMap[time]);
+          }
+        }
+        
+        // Update current list and render
+        currentList = searchResults;
+        filteredList = searchResults;
+        renderTrains(currentList);
+      });
+      
+      // Swap from/to button functionality
+      const swapBtn = document.querySelector('button[aria-label="Swap From and To"]');
+      if (swapBtn) {
+        swapBtn.addEventListener('click', function() {
+          const fromValue = fromInput.value;
+          const toValue = toInput.value;
+          fromInput.value = toValue;
+          toInput.value = fromValue;
+        });
+      }
+      
+      // Filters
+      directBtn?.addEventListener("click", () => {
+        currentList = filteredList.filter(t => t.direct);
+        renderTrains(currentList);
+      });
+
+      fastestBtn?.addEventListener("click", () => {
+        currentList = [...filteredList].sort((a, b) => a.duration - b.duration);
+        renderTrains(currentList);
+      });
+
+      cheapestBtn?.addEventListener("click", () => {
+        currentList = [...filteredList].sort((a, b) => a.price - b.price);
+        renderTrains(currentList);
+      });
+
+      sortBtn?.addEventListener("click", () => {
+        currentList = [...currentList].sort((a, b) => a.duration - b.duration);
+        renderTrains(currentList);
+      });
+      
+      // Reset filters button
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = 'Reset';
+      resetBtn.className = 'border border-gray-300 rounded px-2 py-1 hover:bg-gray-100 text-xs';
+      resetBtn.addEventListener('click', () => {
+        currentList = [...baseList];
+        filteredList = [...baseList];
+        renderTrains(currentList);
+      });
+      
+      // Add reset button to filters
+      const filtersContainer = document.querySelector('.flex.items-center.space-x-3');
+      if (filtersContainer) {
+        filtersContainer.appendChild(resetBtn);
+      }
+    });
+</script>
+</body>
+</html>

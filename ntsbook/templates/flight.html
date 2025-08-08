@@ -1,0 +1,1058 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   NTS Global Voyage
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-white text-gray-900">
+  <header class="border-b border-gray-200">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex items-center justify-between h-16">
+     <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-2">
+        <img src="{{ url_for('static', filename='images/nts_global_logo.png') }}" alt="NTS Global Voyage logo" class="w-8 h-8" />
+       </i>
+       <span class="font-semibold text-lg text-gray-900 select-none">
+        NTS Global Voyage
+       </span>
+      </div>
+      <ul class="hidden md:flex space-x-6 text-gray-600 text-sm font-medium">
+       <li class="flex items-center space-x-1 cursor-pointer hover:text-gray-900" id="home-nav">
+        <i class="fas fa-home text-xs">
+        </i>
+        <span>
+         <a href="/">Home</a>
+        </span>
+       </li>
+       <li class="flex items-center space-x-1 cursor-pointer hover:text-gray-900">
+        <i class="fas fa-ticket-alt text-xs">
+        </i>
+        <span>
+         <a href="{{ url_for('bookings_page') }}">Bookings</a>
+        </span>
+       </li>
+       <li class="flex items-center space-x-1 cursor-pointer hover:text-gray-900">
+        <i class="fas fa-compass text-xs">
+        </i>
+        <span>
+         Explore
+        </span>
+       </li>
+       <li class="flex items-center space-x-1 cursor-pointer hover:text-gray-900">
+        <i class="fas fa-chart-bar text-xs">
+        </i>
+        <span>
+         Reports
+        </span>
+       </li>
+       <li class="relative group flex items-center space-x-1 cursor-pointer hover:text-gray-900">
+        <i class="fas fa-user-circle text-xs">
+        </i>
+        <span>
+         Profile
+        </span>
+        <i class="fas fa-chevron-down text-[8px] mt-[2px]">
+        </i>
+        <ul class="absolute top-full left-0 mt-1 w-28 bg-white border border-gray-200 rounded-md shadow-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-opacity text-sm z-20">
+         <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">
+          Settings
+         </li>
+         <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer">
+          Logout
+         </li>
+        </ul>
+       </li>
+      </ul>
+     </div>
+     <div class="flex items-center space-x-4">
+      <div class="relative hidden md:block">
+       <input class="w-48 pl-10 pr-3 py-1.5 rounded-md border border-gray-300 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" placeholder="Search destination..." type="text"/>
+       <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+       </i>
+      </div>
+      <button aria-label="Notifications" class="relative text-gray-600 hover:text-gray-900 focus:outline-none">
+       <i class="fas fa-bell text-lg">
+       </i>
+       <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+       </span>
+      </button>
+      <div class="relative">
+       <button aria-expanded="false" aria-haspopup="true" class="flex items-center space-x-1 text-gray-600 hover:text-gray-900 focus:outline-none" id="langBtn">
+        <span class="text-sm font-medium">
+         EN
+        </span>
+        <i class="fas fa-chevron-down text-[10px]">
+        </i>
+       </button>
+       <ul class="absolute right-0 mt-1 w-20 bg-white border border-gray-200 rounded-md shadow-md opacity-0 invisible transition-opacity text-sm z-20" id="langMenu" style="transition-property: opacity, visibility;">
+        <li class="px-3 py-2 hover:bg-gray-100 cursor-pointer" role="menuitem" tabindex="0">
+         EN
+        </li>
+      </div>
+     </div>
+    </nav>
+   </div>
+  </header>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-12">
+   <!-- Flight Search -->
+   <section aria-label="Flight search form" class="bg-white rounded-lg shadow-md p-6 border border-gray-200 max-w-full">
+    <div class="flex flex-wrap gap-2 mb-4">
+     <button aria-pressed="true" type="button" id="roundTripBtn" class="trip-type-btn bg-blue-700 text-white text-xs font-semibold rounded-md px-3 py-1.5 focus:outline-none">
+      Round Trip
+     </button>
+     <button aria-pressed="true" type="button" id="oneWayBtn" class="trip-type-btn bg-gray-100 text-gray-600 text-xs font-semibold rounded-md px-3 py-1.5 hover:bg-gray-200 focus:outline-none">
+      One Way
+     </button>
+     <button aria-pressed="true" type="button" id="multiCityBtn" class="trip-type-btn bg-gray-100 text-gray-600 text-xs font-semibold rounded-md px-3 py-1.5 hover:bg-gray-200 focus:outline-none">
+      Multi-City
+     </button>
+    </div>
+    <form class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 items-center" id="flightSearchForm">
+     <div id="flight-segments" class="md:col-span-12 flex flex-col gap-2">
+      <div class="flight-segment grid grid-cols-1 md:grid-cols-7 gap-4 items-center mb-2 w-full">
+       <div class="md:col-span-3 w-full">
+        <label class="sr-only" for="from-0">From</label>
+        <input class="w-full md:w-80 border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 airport-input" id="from-0" placeholder="City or Airport" type="text" list="airport-list" autocomplete="off"/>
+       </div>
+       <div class="flex justify-center md:col-span-1 w-full">
+        <button aria-label="Swap from and to" class="border border-gray-300 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 swapBtn" type="button">
+         <i class="fas fa-exchange-alt"></i>
+        </button>
+       </div>
+       <div class="md:col-span-3 w-full">
+        <label class="sr-only" for="to-0">To</label>
+        <input class="w-full md:w-80 border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 airport-input" id="to-0" placeholder="City or Airport" type="text" list="airport-list" autocomplete="off"/>
+       </div>
+      </div>
+     </div>
+     <datalist id="airport-list">
+      <!-- All airports will be dynamically loaded here by JS -->
+     </datalist>
+     <div class="md:col-span-2 w-full">
+      <label class="sr-only" for="departure">Departure</label>
+      <input class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" id="departure" placeholder="Select date" type="date"/>
+     </div>
+     <div class="md:col-span-2 w-full" id="return-date-wrapper">
+      <label class="sr-only" for="return">Return</label>
+      <input class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" id="return" placeholder="Select date" type="date"/>
+     </div>
+     <div class="md:col-span-3 w-full relative">
+      <label class="sr-only" for="passengers">Passengers &amp; Class</label>
+      <input class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 cursor-pointer" id="passengers" readonly type="text" value="1 Adult, Economy"/>
+      <div id="passenger-dropdown" class="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg p-4 z-30 hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span>Adults</span>
+          <div class="flex items-center gap-2">
+            <button type="button" class="decrement-adult px-2 py-1 bg-gray-200 rounded">-</button>
+            <span id="adult-count">1</span>
+            <button type="button" class="increment-adult px-2 py-1 bg-gray-200 rounded">+</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <span>Children</span>
+          <div class="flex items-center gap-2">
+            <button type="button" class="decrement-child px-2 py-1 bg-gray-200 rounded">-</button>
+            <span id="child-count">0</span>
+            <button type="button" class="increment-child px-2 py-1 bg-gray-200 rounded">+</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <span>Class</span>
+          <select id="class-select" class="border border-gray-300 rounded px-2 py-1 text-sm">
+            <option value="Economy">Economy</option>
+            <option value="Business">Business</option>
+            <option value="First">First Class</option>
+          </select>
+        </div>
+        <button type="button" id="close-passenger-dropdown" class="mt-2 w-full bg-blue-700 text-white rounded px-3 py-1 text-sm">Done</button>
+      </div>
+     </div>
+     <div class="md:col-span-12 flex flex-col gap-2">
+      <div id="multi-city-controls" class="hidden">
+       <button type="button" id="add-segment-btn" class="bg-gray-200 text-gray-700 text-xs font-semibold rounded-md px-3 py-1.5 hover:bg-gray-300 focus:outline-none">+ Add City</button>
+      </div>
+      <button class="w-full bg-blue-700 text-white text-sm font-semibold rounded-md py-2 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-600" type="submit">Search Flights</button>
+     </div>
+    </form>
+    <div id="flight-availability-message" class="mt-4 text-center text-base font-semibold"></div>
+   </section>
+
+   <!-- Flight Results Section -->
+   <section id="flightResults" class="mt-8 hidden">
+     <div class="flex items-center justify-between mb-4">
+       <h2 class="text-xl font-semibold text-gray-900">Available Flights</h2>
+       <div class="flex items-center space-x-4 text-sm">
+         <span class="text-gray-500" id="flightCount">0 flights found</span>
+         <div class="flex items-center space-x-2">
+           <button id="sortPrice" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">Sort by Price</button>
+           <button id="sortDuration" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">Sort by Duration</button>
+           <button id="resetFilters" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100">Reset</button>
+         </div>
+       </div>
+     </div>
+     <div id="flightList" class="space-y-4">
+       <!-- Flight results will be populated here -->
+     </div>
+   </section>
+  <!-- Popular Routes -->
+  <section class="mt-10">
+   <h2 class="text-gray-900 font-semibold text-base mb-4">
+    Popular Routes
+   </h2>
+   <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <article aria-label="Popular route from London to New York for $499" class="border border-gray-200 rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white" tabindex="0">
+     <img alt="City street view of London with billboards and traffic at dusk" class="w-full h-40 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/2d34ee2c-c84b-4f04-9d48-7746bedc32f0.jpg" width="400"/>
+     <div class="p-4">
+      <div class="flex items-center text-xs text-blue-700 font-semibold mb-1 space-x-1">
+       <i class="fas fa-plane-departure">
+       </i>
+       <span>
+        London
+       </span>
+       <span>
+        →
+       </span>
+       <span>
+        New York
+       </span>
+      </div>
+      <p class="text-blue-700 font-bold text-sm mb-2">
+       $499
+      </p>
+      <button aria-label="View flights from London to New York" class="text-xs text-blue-600 hover:underline font-semibold focus:outline-none">
+       View Flights
+      </button>
+     </div>
+    </article>
+    <article aria-label="Popular route from Tokyo to Singapore for $399" class="border border-gray-200 rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white" tabindex="0">
+     <img alt="Harbor view of Tokyo with boats and city skyline in daylight" class="w-full h-40 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/5d6fe1a0-10bb-414d-7f1b-fa28f912e9c7.jpg" width="400"/>
+     <div class="p-4">
+      <div class="flex items-center text-xs text-blue-700 font-semibold mb-1 space-x-1">
+       <i class="fas fa-plane-departure">
+       </i>
+       <span>
+        Tokyo
+       </span>
+       <span>
+        →
+       </span>
+       <span>
+        Singapore
+       </span>
+      </div>
+      <p class="text-blue-700 font-bold text-sm mb-2">
+       $399
+      </p>
+      <button aria-label="View flights from Tokyo to Singapore" class="text-xs text-blue-600 hover:underline font-semibold focus:outline-none">
+       View Flights
+      </button>
+     </div>
+    </article>
+    <article aria-label="Popular route from Dubai to Paris for $599" class="border border-gray-200 rounded-lg shadow-sm overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white" tabindex="0">
+     <img alt="Eiffel Tower in Paris at sunset with purple and orange sky" class="w-full h-40 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/290bbd45-c125-4223-87dd-7d605e7ed7bc.jpg" width="400"/>
+     <div class="p-4">
+      <div class="flex items-center text-xs text-blue-700 font-semibold mb-1 space-x-1">
+       <i class="fas fa-plane-departure">
+       </i>
+       <span>
+        Dubai
+       </span>
+       <span>
+        →
+       </span>
+       <span>
+        Paris
+       </span>
+      </div>
+      <p class="text-blue-700 font-bold text-sm mb-2">
+       $599
+      </p>
+      <button aria-label="View flights from Dubai to Paris" class="text-xs text-blue-600 hover:underline font-semibold focus:outline-none">
+       View Flights
+      </button>
+     </div>
+    </article>
+   </div>
+  </section>
+  <!-- Special Offers -->
+  <section class="mt-10">
+   <h2 class="text-gray-900 font-semibold text-base mb-4">
+    Special Offers
+   </h2>
+   <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <article aria-label="Special offer Summer Sale: Up to 30% off on international flights" class="rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white border border-gray-200" tabindex="0">
+     <img alt="Summer beach sunset with ocean waves and warm colors" class="w-full h-28 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/b8361684-0228-4a8c-7a73-3bc5cf1bd5d5.jpg" width="400"/>
+     <div class="p-3">
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">
+       Summer Sale
+      </h3>
+      <p class="text-xs text-gray-500">
+       Up to 30% off on international flights
+      </p>
+     </div>
+    </article>
+    <article aria-label="Special offer Early Bird: Book 60 days in advance and save" class="rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white border border-gray-200" tabindex="0">
+     <img alt="View of airplane wing flying above clouds with blue sky" class="w-full h-28 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/b8ab8160-cfa9-4434-f3d1-aff32b37d8c4.jpg" width="400"/>
+     <div class="p-3">
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">
+       Early Bird
+      </h3>
+      <p class="text-xs text-gray-500">
+       Book 60 days in advance and save
+      </p>
+     </div>
+    </article>
+    <article aria-label="Special offer Business Class: Upgrade at special rates" class="rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white border border-gray-200" tabindex="0">
+     <img alt="Interior view of business class airplane seats with blue upholstery" class="w-full h-28 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/49a47622-7954-4855-dd75-5b216f1ef450.jpg" width="400"/>
+     <div class="p-3">
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">
+       Business Class
+      </h3>
+      <p class="text-xs text-gray-500">
+       Upgrade at special rates
+      </p>
+     </div>
+    </article>
+    <article aria-label="Special offer Last Minute: Great deals for last-minute travelers" class="rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow bg-white border border-gray-200" tabindex="0">
+     <img alt="Santorini blue domed church with sea view and clear sky" class="w-full h-28 object-cover" height="200" loading="lazy" src="https://storage.googleapis.com/a1aa/image/7fa4c9bd-d4c6-4942-eb56-acfdf8d326fa.jpg" width="400"/>
+     <div class="p-3">
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">
+       Last Minute
+      </h3>
+      <p class="text-xs text-gray-500">
+       Great deals for last-minute travelers
+      </p>
+     </div>
+    </article>
+   </div>
+  </section>
+  <!-- Price Comparison -->
+  <section class="mt-10">
+   <h2 class="text-gray-900 font-semibold text-base mb-4">
+    Price Comparison
+   </h2>
+   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div aria-label="Price comparison for March 15 with price $599" class="border border-gray-200 rounded-lg p-4 text-xs text-gray-500 flex flex-col items-center">
+     <span class="mb-2">
+      Mar 15
+     </span>
+     <div class="w-full h-12 bg-gray-100 rounded-md">
+     </div>
+     <span class="text-red-600 font-semibold mt-2">
+      $599
+     </span>
+    </div>
+    <div aria-label="Price comparison for March 22 with price $499" class="border border-gray-200 rounded-lg p-4 text-xs text-gray-500 flex flex-col items-center">
+     <span class="mb-2">
+      Mar 22
+     </span>
+     <div class="w-full h-12 bg-gray-100 rounded-md">
+     </div>
+     <span class="text-green-600 font-semibold mt-2">
+      $499
+     </span>
+    </div>
+    <div aria-label="Price comparison for March 29 with price $549" class="border border-gray-200 rounded-lg p-4 text-xs text-gray-500 flex flex-col items-center">
+     <span class="mb-2">
+      Mar 29
+     </span>
+     <div class="w-full h-12 bg-gray-100 rounded-md">
+     </div>
+     <span class="text-red-600 font-semibold mt-2">
+      $549
+     </span>
+    </div>
+   </div>
+  </section>
+ </main>
+
+ <!-- Flight Booking Modal -->
+ <div id="flightBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+   <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+     <button onclick="closeFlightModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+     <h2 class="text-xl font-semibold mb-4">Book Flight</h2>
+     <div id="flightDetails" class="mb-4 p-3 bg-gray-50 rounded">
+       <!-- Flight details will be populated here -->
+     </div>
+     <form id="flightBookingForm" class="space-y-4">
+       <input type="hidden" id="selectedFlightData" />
+       <div>
+         <label class="block text-sm font-medium text-gray-700 mb-1">Passenger Name</label>
+         <input type="text" id="passengerName" placeholder="Full Name" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+       </div>
+       <div>
+         <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+         <input type="email" id="passengerEmail" placeholder="Email" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+       </div>
+       <div>
+         <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+         <input type="tel" id="passengerPhone" placeholder="Phone" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+       </div>
+       <div>
+         <label class="block text-sm font-medium text-gray-700 mb-1">Number of Passengers</label>
+         <select id="passengerCount" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+           <option value="">Select Passengers</option>
+           <option value="1">1 Passenger</option>
+           <option value="2">2 Passengers</option>
+           <option value="3">3 Passengers</option>
+           <option value="4">4 Passengers</option>
+           <option value="5">5 Passengers</option>
+           <option value="6">6 Passengers</option>
+         </select>
+       </div>
+       <div class="flex justify-end space-x-3 pt-4">
+         <button type="button" onclick="closeFlightModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm">Cancel</button>
+         <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Confirm Booking</button>
+       </div>
+     </form>
+   </div>
+ </div>
+
+ <footer class="bg-gray-900 text-gray-400 text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 sm:grid-cols-4 gap-8">
+   <div>
+    <div class="flex items-center space-x-2 mb-3">
+     <i class="fas fa-plane-departure text-white text-lg">
+     </i>
+     <span class="text-white font-semibold text-sm select-none">
+      NTS Global
+     </span>
+    </div>
+    <p class="text-gray-400 leading-relaxed max-w-xs">
+     Making travel accessible and affordable for everyone.
+    </p>
+   </div>
+   <div>
+    <h3 class="text-gray-300 font-semibold mb-3">
+     Quick Links
+    </h3>
+    <ul class="space-y-1">
+     <li>
+      <a class="hover:text-white" href="#">
+       About Us
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       Destinations
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       Special Offers
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       Blog
+      </a>
+     </li>
+    </ul>
+   </div>
+   <div>
+    <h3 class="text-gray-300 font-semibold mb-3">
+     Support
+    </h3>
+    <ul class="space-y-1">
+     <li>
+      <a class="hover:text-white" href="#">
+       Contact Us
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       FAQs
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       Terms &amp; Conditions
+      </a>
+     </li>
+     <li>
+      <a class="hover:text-white" href="#">
+       Privacy Policy
+      </a>
+     </li>
+    </ul>
+   </div>
+   <div>
+    <h3 class="text-gray-300 font-semibold mb-3">
+     Newsletter
+    </h3>
+    <p class="mb-3">
+     Subscribe to get special offers and updates.
+    </p>
+    <form class="flex space-x-2" onsubmit="event.preventDefault()">
+     <input class="w-full rounded-md bg-gray-800 border border-gray-700 px-3 py-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" placeholder="Your email" required="" type="email"/>
+     <button class="bg-blue-700 hover:bg-blue-800 text-white rounded-md px-4 py-2 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600" type="submit">
+      Subscribe
+     </button>
+    </form>
+   </div>
+  </div>
+  <div class="border-t border-gray-800 py-4">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center text-gray-500 text-xs">
+    <p>
+     © 2024 NTS Global. All rights reserved.
+    </p>
+    <div class="flex space-x-4 mt-3 sm:mt-0">
+     <a aria-label="Facebook" class="hover:text-white" href="#">
+      <i class="fab fa-facebook-f">
+      </i>
+     </a>
+     <a aria-label="Twitter" class="hover:text-white" href="#">
+      <i class="fab fa-twitter">
+      </i>
+     </a>
+     <a aria-label="Instagram" class="hover:text-white" href="#">
+      <i class="fab fa-instagram">
+      </i>
+     </a>
+     <a aria-label="LinkedIn" class="hover:text-white" href="#">
+      <i class="fab fa-linkedin-in">
+      </i>
+     </a>
+    </div>
+   </div>
+  </div>
+ </footer>
+ <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Flight data
+      const flights = [
+        {
+          id: 1,
+          airline: "British Airways",
+          flightNumber: "BA123",
+          from: "London Heathrow (LHR), GB",
+          to: "John F. Kennedy International (JFK), US",
+          departure: "08:30",
+          arrival: "11:45",
+          duration: "7h 15m",
+          price: 850,
+          class: "Economy",
+          stops: 0,
+          image: "https://storage.googleapis.com/a1aa/image/35f3c72d-6fb9-46c4-5e04-90f5aca67e50.jpg"
+        },
+        {
+          id: 2,
+          airline: "Emirates",
+          flightNumber: "EK456",
+          from: "Dubai International (DXB), AE",
+          to: "Paris Charles de Gaulle (CDG), FR",
+          departure: "14:20",
+          arrival: "19:35",
+          duration: "7h 15m",
+          price: 1200,
+          class: "Business",
+          stops: 0,
+          image: "https://storage.googleapis.com/a1aa/image/8f2f31e8-3c28-4680-3a74-c9ead94bc723.jpg"
+        },
+        {
+          id: 3,
+          airline: "Singapore Airlines",
+          flightNumber: "SQ789",
+          from: "Tokyo Haneda (HND), JP",
+          to: "Singapore Changi (SIN), SG",
+          departure: "10:15",
+          arrival: "16:45",
+          duration: "6h 30m",
+          price: 650,
+          class: "Economy",
+          stops: 0,
+          image: "https://storage.googleapis.com/a1aa/image/fee99077-ec4d-4db1-9a21-3b42fc818e28.jpg"
+        },
+        {
+          id: 4,
+          airline: "Lufthansa",
+          flightNumber: "LH234",
+          from: "Frankfurt Airport (FRA), DE",
+          to: "Sydney Kingsford Smith (SYD), AU",
+          departure: "22:00",
+          arrival: "08:30",
+          duration: "22h 30m",
+          price: 1800,
+          class: "Economy",
+          stops: 1,
+          image: "https://storage.googleapis.com/a1aa/image/35f3c72d-6fb9-46c4-5e04-90f5aca67e50.jpg"
+        },
+        {
+          id: 5,
+          airline: "Air India",
+          flightNumber: "AI567",
+          from: "Mumbai Chhatrapati Shivaji (BOM), IN",
+          to: "Beijing Capital (PEK), CN",
+          departure: "02:30",
+          arrival: "10:15",
+          duration: "7h 45m",
+          price: 750,
+          class: "Economy",
+          stops: 0,
+          image: "https://storage.googleapis.com/a1aa/image/8f2f31e8-3c28-4680-3a74-c9ead94bc723.jpg"
+        },
+        {
+          id: 6,
+          airline: "Qatar Airways",
+          flightNumber: "QR890",
+          from: "London Heathrow (LHR), GB",
+          to: "John F. Kennedy International (JFK), US",
+          departure: "16:45",
+          arrival: "20:00",
+          duration: "7h 15m",
+          price: 950,
+          class: "Business",
+          stops: 0,
+          image: "https://storage.googleapis.com/a1aa/image/fee99077-ec4d-4db1-9a21-3b42fc818e28.jpg"
+        }
+      ];
+
+      let currentFlights = [...flights];
+      let filteredFlights = [...flights];
+
+      // Language dropdown functionality
+      const langBtn = document.getElementById('langBtn');
+      const langMenu = document.getElementById('langMenu');
+
+      if (langBtn && langMenu) {
+        langBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const expanded = langBtn.getAttribute('aria-expanded') === 'true';
+          langBtn.setAttribute('aria-expanded', !expanded);
+          langMenu.classList.toggle('invisible', expanded);
+          langMenu.classList.toggle('opacity-0', expanded);
+          langMenu.classList.toggle('visible', !expanded);
+          langMenu.classList.toggle('opacity-100', !expanded);
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+            langMenu.classList.add('invisible', 'opacity-0');
+            langMenu.classList.remove('visible', 'opacity-100');
+            langBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // Home navigation
+      const homeNav = document.getElementById('home-nav');
+      if (homeNav) {
+        homeNav.addEventListener('click', function() {
+          window.location.href = '/';
+        });
+      }
+
+      // Trip type logic
+      const roundTripBtn = document.getElementById('roundTripBtn');
+      const oneWayBtn = document.getElementById('oneWayBtn');
+      const multiCityBtn = document.getElementById('multiCityBtn');
+      const returnDateWrapper = document.getElementById('return-date-wrapper');
+      const flightSegments = document.getElementById('flight-segments');
+      const multiCityControls = document.getElementById('multi-city-controls');
+      let tripType = 'round';
+
+      function setTripType(type) {
+        tripType = type;
+        roundTripBtn.classList.toggle('bg-blue-700', type === 'round');
+        roundTripBtn.classList.toggle('text-white', type === 'round');
+        roundTripBtn.classList.toggle('bg-gray-100', type !== 'round');
+        roundTripBtn.classList.toggle('text-gray-600', type !== 'round');
+        oneWayBtn.classList.toggle('bg-blue-700', type === 'oneway');
+        oneWayBtn.classList.toggle('text-white', type === 'oneway');
+        oneWayBtn.classList.toggle('bg-gray-100', type !== 'oneway');
+        oneWayBtn.classList.toggle('text-gray-600', type !== 'oneway');
+        multiCityBtn.classList.toggle('bg-blue-700', type === 'multi');
+        multiCityBtn.classList.toggle('text-white', type === 'multi');
+        multiCityBtn.classList.toggle('bg-gray-100', type !== 'multi');
+        multiCityBtn.classList.toggle('text-gray-600', type !== 'multi');
+        returnDateWrapper.style.display = (type === 'round') ? '' : 'none';
+        multiCityControls.classList.toggle('hidden', type !== 'multi');
+        if (type === 'multi') {
+          Array.from(flightSegments.children).forEach((seg, i) => {
+            if (i > 0) seg.remove();
+          });
+        }
+      }
+
+      if (roundTripBtn) roundTripBtn.onclick = () => setTripType('round');
+      if (oneWayBtn) oneWayBtn.onclick = () => setTripType('oneway');
+      if (multiCityBtn) multiCityBtn.onclick = () => setTripType('multi');
+      setTripType('round');
+
+      // Multi-city logic
+      const addSegmentBtn = document.getElementById('add-segment-btn');
+      if (addSegmentBtn) {
+        addSegmentBtn.onclick = () => {
+          const idx = flightSegments.children.length;
+          const seg = document.createElement('div');
+          seg.className = 'flight-segment grid grid-cols-1 md:grid-cols-7 gap-4 items-center mb-2';
+          seg.innerHTML = `
+            <div class="md:col-span-3">
+              <input class="w-full md:w-80 border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 airport-input" placeholder="City or Airport" type="text" list="airport-list" autocomplete="off" id="from-${idx}">
+            </div>
+            <div class="flex justify-center md:col-span-1">
+              <button aria-label="Swap from and to" class="border border-gray-300 rounded-full p-2 text-gray-500 hover:text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 swapBtn" type="button"><i class="fas fa-exchange-alt"></i></button>
+            </div>
+            <div class="md:col-span-3">
+              <input class="w-full md:w-80 border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 airport-input" placeholder="City or Airport" type="text" list="airport-list" autocomplete="off" id="to-${idx}">
+            </div>
+            <div class="md:col-span-7 flex justify-end mt-2">
+              <button type="button" class="remove-segment-btn text-xs text-red-600 hover:underline">Remove</button>
+            </div>
+          `;
+          flightSegments.appendChild(seg);
+          seg.querySelector('.remove-segment-btn').onclick = () => seg.remove();
+          seg.querySelector('.swapBtn').onclick = () => {
+            const from = seg.querySelector(`#from-${idx}`);
+            const to = seg.querySelector(`#to-${idx}`);
+            const temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+          };
+        };
+      }
+
+      // Add swap logic for initial segment
+      const initialSwapBtn = flightSegments.querySelector('.swapBtn');
+      if (initialSwapBtn) {
+        initialSwapBtn.onclick = () => {
+          const from = document.getElementById('from-0');
+          const to = document.getElementById('to-0');
+          const temp = from.value;
+          from.value = to.value;
+          to.value = temp;
+        };
+      }
+
+      // Passenger dropdown logic
+      const passengersInput = document.getElementById('passengers');
+      const dropdown = document.getElementById('passenger-dropdown');
+      const adultCount = document.getElementById('adult-count');
+      const childCount = document.getElementById('child-count');
+      const classSelect = document.getElementById('class-select');
+      let adults = 1, children = 0, travelClass = 'Economy';
+
+      function updatePassengersInput() {
+        let summary = `${adults} Adult${adults>1?'s':''}`;
+        if (children > 0) summary += `, ${children} Child${children>1?'ren':' '}`;
+        summary += `, ${travelClass}`;
+        passengersInput.value = summary;
+      }
+
+      if (passengersInput) {
+        passengersInput.addEventListener('click', () => {
+          dropdown.classList.toggle('hidden');
+        });
+      }
+
+      const closeDropdownBtn = document.getElementById('close-passenger-dropdown');
+      if (closeDropdownBtn) {
+        closeDropdownBtn.onclick = () => {
+          dropdown.classList.add('hidden');
+        };
+      }
+
+      if (dropdown) {
+        dropdown.addEventListener('click', e => e.stopPropagation());
+        document.addEventListener('click', e => {
+          if (!dropdown.contains(e.target) && e.target !== passengersInput) {
+            dropdown.classList.add('hidden');
+          }
+        });
+
+        const incrementAdult = dropdown.querySelector('.increment-adult');
+        const decrementAdult = dropdown.querySelector('.decrement-adult');
+        const incrementChild = dropdown.querySelector('.increment-child');
+        const decrementChild = dropdown.querySelector('.decrement-child');
+
+        if (incrementAdult) {
+          incrementAdult.onclick = () => {
+            adults = Math.min(adults + 1, 9);
+            updatePassengersInput();
+            adultCount.textContent = adults;
+          };
+        }
+
+        if (decrementAdult) {
+          decrementAdult.onclick = () => {
+            adults = Math.max(adults - 1, 1);
+            updatePassengersInput();
+            adultCount.textContent = adults;
+          };
+        }
+
+        if (incrementChild) {
+          incrementChild.onclick = () => {
+            children = Math.min(children + 1, 9);
+            updatePassengersInput();
+            childCount.textContent = children;
+          };
+        }
+
+        if (decrementChild) {
+          decrementChild.onclick = () => {
+            children = Math.max(children - 1, 0);
+            updatePassengersInput();
+            childCount.textContent = children;
+          };
+        }
+
+        if (classSelect) {
+          classSelect.onchange = () => {
+            travelClass = classSelect.value;
+            updatePassengersInput();
+          };
+        }
+      }
+
+      updatePassengersInput();
+
+      // Flight search form submission
+      const flightSearchForm = document.getElementById('flightSearchForm');
+      const flightResults = document.getElementById('flightResults');
+      const flightList = document.getElementById('flightList');
+      const flightCount = document.getElementById('flightCount');
+
+      if (flightSearchForm) {
+        flightSearchForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const from = document.getElementById('from-0').value.toLowerCase().trim();
+          const to = document.getElementById('to-0').value.toLowerCase().trim();
+          const departure = document.getElementById('departure').value;
+          const returnDate = document.getElementById('return').value;
+          
+          console.log('Searching for flights:', { from, to, departure, returnDate });
+          
+          // Filter flights based on search criteria
+          let searchResults = flights.filter(flight => {
+            const fromMatch = flight.from.toLowerCase().includes(from);
+            const toMatch = flight.to.toLowerCase().includes(to);
+            return fromMatch && toMatch;
+          });
+          
+          // Update current flights and display
+          currentFlights = searchResults;
+          filteredFlights = searchResults;
+          displayFlights();
+          
+          // Show results section
+          flightResults.classList.remove('hidden');
+        });
+      }
+
+      // Display flights function
+      function displayFlights() {
+        if (!flightList) return;
+        
+        flightList.innerHTML = '';
+        
+        if (currentFlights.length === 0) {
+          flightList.innerHTML = `
+            <div class="text-center py-12">
+              <div class="text-gray-400 text-6xl mb-4">
+                <i class="fas fa-plane-slash"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">No Flights Found</h3>
+              <p class="text-gray-500">Try adjusting your search criteria or dates.</p>
+            </div>
+          `;
+          if (flightCount) flightCount.textContent = '0 flights found';
+          return;
+        }
+        
+        currentFlights.forEach(flight => {
+          const flightHtml = `
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                  <img src="${flight.image}" alt="${flight.airline}" class="w-16 h-16 rounded-lg object-cover">
+                  <div>
+                    <h3 class="font-semibold text-gray-900">${flight.airline}</h3>
+                    <p class="text-sm text-gray-500">Flight ${flight.flightNumber}</p>
+                    <p class="text-xs text-gray-400">${flight.class} Class</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-center space-x-6 mb-4 md:mb-0">
+                  <div class="text-center">
+                    <p class="font-semibold text-gray-900">${flight.departure}</p>
+                    <p class="text-sm text-gray-500">${flight.from.split('(')[0].trim()}</p>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="w-16 h-px bg-gray-300"></div>
+                    <p class="text-xs text-gray-400 mt-1">${flight.duration}</p>
+                    <p class="text-xs text-gray-400">${flight.stops} stop${flight.stops !== 1 ? 's' : ''}</p>
+                  </div>
+                  <div class="text-center">
+                    <p class="font-semibold text-gray-900">${flight.arrival}</p>
+                    <p class="text-sm text-gray-500">${flight.to.split('(')[0].trim()}</p>
+                  </div>
+                </div>
+                
+                <div class="flex flex-col items-end space-y-2">
+                  <p class="text-2xl font-bold text-blue-600">$${flight.price}</p>
+                  <button onclick="openFlightBookingModal('${flight.from}', '${flight.to}', ${flight.price}, '${flight.airline}', '${flight.flightNumber}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold">
+                    Book Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          flightList.innerHTML += flightHtml;
+        });
+        
+        if (flightCount) flightCount.textContent = `${currentFlights.length} flight${currentFlights.length !== 1 ? 's' : ''} found`;
+      }
+
+      // Sort functionality
+      const sortPriceBtn = document.getElementById('sortPrice');
+      const sortDurationBtn = document.getElementById('sortDuration');
+      const resetFiltersBtn = document.getElementById('resetFilters');
+
+      if (sortPriceBtn) {
+        sortPriceBtn.addEventListener('click', () => {
+          currentFlights.sort((a, b) => a.price - b.price);
+          displayFlights();
+        });
+      }
+
+      if (sortDurationBtn) {
+        sortDurationBtn.addEventListener('click', () => {
+          currentFlights.sort((a, b) => {
+            const durationA = parseInt(a.duration.split('h')[0]);
+            const durationB = parseInt(b.duration.split('h')[0]);
+            return durationA - durationB;
+          });
+          displayFlights();
+        });
+      }
+
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', () => {
+          currentFlights = [...filteredFlights];
+          displayFlights();
+        });
+      }
+
+      // Flight booking modal functions
+      window.openFlightBookingModal = function(from, to, price, airline, flightNumber) {
+        const modal = document.getElementById('flightBookingModal');
+        const flightDetails = document.getElementById('flightDetails');
+        const selectedFlightData = document.getElementById('selectedFlightData');
+        
+        if (flightDetails) {
+          flightDetails.innerHTML = `
+            <div class="space-y-2">
+              <p><strong>Route:</strong> ${from} → ${to}</p>
+              <p><strong>Airline:</strong> ${airline}</p>
+              <p><strong>Flight:</strong> ${flightNumber}</p>
+              <p><strong>Price:</strong> $${price}</p>
+            </div>
+          `;
+        }
+        
+        if (selectedFlightData) {
+          selectedFlightData.value = JSON.stringify({ from, to, price, airline, flightNumber });
+        }
+        
+        modal.classList.remove('hidden');
+      };
+
+      window.closeFlightModal = function() {
+        const modal = document.getElementById('flightBookingModal');
+        modal.classList.add('hidden');
+        document.getElementById('flightBookingForm').reset();
+      };
+
+      // Flight booking form submission
+      const flightBookingForm = document.getElementById('flightBookingForm');
+      if (flightBookingForm) {
+        flightBookingForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const passengerName = document.getElementById('passengerName').value;
+          const passengerEmail = document.getElementById('passengerEmail').value;
+          const passengerPhone = document.getElementById('passengerPhone').value;
+          const passengerCount = document.getElementById('passengerCount').value;
+          const selectedFlightData = JSON.parse(document.getElementById('selectedFlightData').value);
+          
+          // Calculate total price
+          const totalPrice = selectedFlightData.price * parseInt(passengerCount);
+          
+          // Prepare booking data
+          const bookingData = {
+            destination: `${selectedFlightData.from} → ${selectedFlightData.to}`,
+            dates: 'TBD',
+            price: `$${totalPrice}`,
+            travelers: parseInt(passengerCount),
+            type: 'flight',
+            passenger_name: passengerName,
+            passenger_email: passengerEmail,
+            passenger_phone: passengerPhone,
+            image: 'https://storage.googleapis.com/a1aa/image/35f3c72d-6fb9-46c4-5e04-90f5aca67e50.jpg'
+          };
+
+          // Send booking to backend
+          fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert("✅ Flight booking confirmed! Redirecting to My Bookings...");
+              closeFlightModal();
+              setTimeout(() => {
+                window.location.href = '/bookings';
+              }, 1000);
+            } else {
+              alert("❌ Booking failed: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error creating booking:', error);
+            alert("❌ Booking failed. Please try again.");
+          });
+        });
+      }
+
+      // Popular routes booking functionality
+      const viewButtons = document.querySelectorAll('button[aria-label^="View flights"]');
+      viewButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          const ariaLabel = button.getAttribute('aria-label');
+          const routeMatch = ariaLabel.match(/from (.*?) to (.*?)/);
+          if (routeMatch) {
+            const from = routeMatch[1];
+            const to = routeMatch[2];
+            
+            // Pre-fill the search form
+            document.getElementById('from-0').value = from;
+            document.getElementById('to-0').value = to;
+            
+            // Trigger search
+            flightSearchForm.dispatchEvent(new Event('submit'));
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

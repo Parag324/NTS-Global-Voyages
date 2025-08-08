@@ -1,0 +1,1066 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   My Bookings - NTS Global Voyage
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-[#F9FAFB] text-[#1F2937]">
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+     <div class="flex items-center space-x-6">
+      <img src="{{ url_for('static', filename='images/nts_global_logo.png') }}" alt="NTS Global Voyage logo" class="w-8 h-8" />
+      <div class="text-xl font-semibold text-[#111827] cursor-pointer select-none">
+       NTS Global Voyage
+      </div>
+      <nav class="hidden md:flex space-x-6 text-sm font-medium text-[#6B7280]">
+       <a class="hover:text-[#111827] flex items-center gap-1" href="/">
+        <i class="fas fa-home">
+        </i>
+        Home
+       </a>
+       <a class="hover:text-[#111827]" href="{{ url_for('bookings_page') }}">
+        Bookings
+       </a>
+       <a class="hover:text-[#111827]" href="#">
+        Explore
+       </a>
+       <a class="hover:text-[#111827]" href="#">
+        Reports
+       </a>
+       <a class="hover:text-[#111827] flex items-center gap-1" href="#">
+        Profile
+        <i class="fas fa-caret-down text-xs">
+        </i>
+       </a>
+      </nav>
+     </div>
+     <div class="flex items-center space-x-4">
+      <div class="relative hidden md:block">
+       <input class="pl-10 pr-4 py-2 rounded-md border border-gray-300 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64" placeholder="Search destination..." type="text"/>
+       <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+       </i>
+      </div>
+      <button aria-label="Language selector" class="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 focus:outline-none">
+       <span>
+        EN
+       </span>
+       <i class="fas fa-caret-down text-xs">
+       </i>
+      </button>
+     </div>
+    </div>
+   </div>
+  </header>
+  <!-- Breadcrumb -->
+  <nav aria-label="Breadcrumb" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+   <ol class="flex items-center space-x-2 text-sm text-gray-500">
+    <li>
+     <a class="hover:underline" href="/">
+      Home
+     </a>
+     <span class="mx-2">
+      /
+     </span>
+    </li>
+    <li>
+     <a class="hover:underline" href="#">
+      My Account
+     </a>
+     <span class="mx-2">
+      /
+     </span>
+    </li>
+    <li aria-current="page" class="text-gray-900 font-semibold">
+     My Bookings
+    </li>
+   </ol>
+  </nav>
+  <!-- Main content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-16">
+   <h1 class="text-2xl font-semibold text-[#111827] mb-1">
+    My Bookings
+   </h1>
+   <p class="text-sm text-gray-500 mb-6">
+    Manage your travel arrangements
+   </p>
+   <!-- Tabs -->
+   <div class="flex space-x-6 border-b border-gray-200 mb-6 text-sm font-semibold text-gray-500">
+    <button id="upcomingTab" aria-current="page" class="pb-3 border-b-2 border-blue-600 text-blue-600" type="button" onclick="switchTab('upcoming')">
+     Upcoming Bookings
+    </button>
+    <button id="pastTab" class="pb-3 hover:text-gray-900" type="button" onclick="switchTab('past')">
+     Past Bookings
+    </button>
+   </div>
+   <!-- Filters -->
+   <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-6 space-y-3 sm:space-y-0">
+    <button id="filterBtn" class="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100" type="button">
+     <i class="fas fa-filter">
+     </i>
+     Filter
+    </button>
+    <select id="sortSelect" aria-label="Sort by" class="border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer">
+     <option value="">Sort by Date</option>
+     <option value="price">Sort by Price</option>
+     <option value="destination">Sort by Destination</option>
+     <option value="status">Sort by Status</option>
+     <option value="travelers">Sort by Travelers</option>
+    </select>
+    <button id="dateRangeBtn" class="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100" type="button">
+     <i class="fas fa-calendar-alt">
+     </i>
+     Date Range
+    </button>
+    <button id="destinationBtn" class="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100" type="button">
+     <i class="fas fa-map-marker-alt">
+     </i>
+     Destination
+    </button>
+    <button id="resetFiltersBtn" class="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-600 hover:bg-gray-100" type="button">
+     <i class="fas fa-times">
+     </i>
+     Reset
+    </button>
+   </div>
+   <!-- Active Filters Display -->
+   <div id="activeFiltersDisplay" class="mb-4 hidden">
+     <div class="flex items-center gap-2 text-sm text-gray-600">
+       <span>Active filters:</span>
+       <div id="activeFiltersList" class="flex flex-wrap gap-2">
+         <!-- Active filter tags will be displayed here -->
+       </div>
+     </div>
+   </div>
+   <!-- Booking cards container -->
+   <div class="space-y-6" id="bookings-container">
+    {% for booking in bookings %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-lg shadow-sm p-4">
+     <div class="flex items-center space-x-4">
+      <img alt="Photo of {{ booking.destination }}" class="w-24 h-24 rounded-lg object-cover flex-shrink-0" height="96" src="{{ booking.image }}" width="96"/>
+      <div>
+       <p class="text-xs text-gray-400 mb-1">
+        Booking Reference: {{ booking.ref }}
+       </p>
+       <h2 class="text-lg font-semibold text-[#111827]">
+        {{ booking.destination }}
+       </h2>
+       <p class="text-sm text-gray-500">
+        {{ booking.dates }}
+       </p>
+       <div class="flex items-center space-x-4 mt-1 text-sm">
+        <span class="inline-block {{ booking.status_color }} px-2 py-0.5 rounded-full font-semibold">
+         {{ booking.status }}
+        </span>
+        <a class="text-blue-600 hover:underline" href="#">
+         View Details
+        </a>
+        <a class="text-blue-600 hover:underline" href="#">
+         Modify Booking
+        </a>
+        <a class="text-blue-600 hover:underline" href="#">
+         Download Itinerary
+        </a>
+       </div>
+      </div>
+     </div>
+     <div class="mt-4 sm:mt-0 text-right text-blue-600 font-semibold text-lg min-w-[90px]">
+      {{ booking.price }}
+      <p class="text-gray-500 text-xs mt-1 flex items-center justify-end gap-1">
+       <i class="fas fa-user-friends">
+       </i>
+       {{ booking.travelers }} Traveler{{ 's' if booking.travelers > 1 else '' }}
+      </p>
+     </div>
+    </div>
+    {% endfor %}
+   </div>
+  </main>
+  
+  <!-- View Details Modal -->
+  <div id="viewDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+      <button onclick="closeViewModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Booking Details</h2>
+      <div id="bookingDetails" class="space-y-4">
+        <!-- Details will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Booking Modal -->
+  <div id="modifyBookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <button onclick="closeModifyModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Modify Booking</h2>
+      <form id="modifyBookingForm" class="space-y-4">
+        <input type="hidden" id="modifyBookingId" />
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Passenger Name</label>
+          <input type="text" id="modifyPassengerName" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="modifyPassengerEmail" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input type="tel" id="modifyPassengerPhone" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Number of Travelers</label>
+          <select id="modifyTravelers" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" onclick="closeModifyModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Date Range Filter Modal -->
+  <div id="dateRangeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <button onclick="closeDateRangeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Filter by Date Range</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+          <input type="date" id="dateFrom" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+          <input type="date" id="dateTo" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </div>
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" onclick="closeDateRangeModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm">Cancel</button>
+          <button type="button" onclick="applyDateRangeFilter()" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Apply Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Destination Filter Modal -->
+  <div id="destinationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <button onclick="closeDestinationModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Filter by Destination</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Search Destination</label>
+          <input type="text" id="destinationSearch" placeholder="Enter destination name..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Or select from popular destinations:</label>
+          <div class="space-y-2 max-h-40 overflow-y-auto">
+            <label class="flex items-center">
+              <input type="checkbox" value="Paris" class="destination-checkbox mr-2"> Paris, France
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="Tokyo" class="destination-checkbox mr-2"> Tokyo, Japan
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="New York" class="destination-checkbox mr-2"> New York, USA
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="London" class="destination-checkbox mr-2"> London, UK
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="Rome" class="destination-checkbox mr-2"> Rome, Italy
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="Barcelona" class="destination-checkbox mr-2"> Barcelona, Spain
+            </label>
+            <label class="flex items-center">
+              <input type="checkbox" value="Amsterdam" class="destination-checkbox mr-2"> Amsterdam, Netherlands
+            </label>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" onclick="closeDestinationModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm">Cancel</button>
+          <button type="button" onclick="applyDestinationFilter()" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Apply Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Filter Modal -->
+  <div id="advancedFilterModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <button onclick="closeAdvancedFilterModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Advanced Filters</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select id="statusFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <option value="">All Statuses</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <select id="typeFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <option value="">All Types</option>
+            <option value="flight">Flight</option>
+            <option value="train">Train</option>
+            <option value="ride">Ride</option>
+            <option value="bus">Bus</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+          <div class="flex space-x-2">
+            <input type="number" id="minPrice" placeholder="Min" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            <span class="text-gray-500 self-center">-</span>
+            <input type="number" id="maxPrice" placeholder="Max" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Number of Travelers</label>
+          <select id="travelersFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <option value="">Any</option>
+            <option value="1">1 Traveler</option>
+            <option value="2">2 Travelers</option>
+            <option value="3">3 Travelers</option>
+            <option value="4">4+ Travelers</option>
+          </select>
+        </div>
+        <div class="flex justify-end space-x-3 pt-4">
+          <button type="button" onclick="closeAdvancedFilterModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md text-sm">Cancel</button>
+          <button type="button" onclick="applyAdvancedFilter()" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#1E293B] text-gray-300 pt-10 pb-8">
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:justify-between md:space-x-12">
+     <div class="mb-8 md:mb-0 max-w-xs">
+      <h3 class="text-white font-semibold text-lg mb-3">
+       NTS Global Voyage
+      </h3>
+      <p class="text-gray-400 text-sm leading-relaxed">
+       Making travel dreams come true since 2013. Your trusted partner for unforgettable journeys.
+      </p>
+     </div>
+     <div class="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4 flex-grow">
+      <div>
+       <h4 class="text-white font-semibold mb-3">
+        Quick Links
+       </h4>
+       <ul class="space-y-2 text-sm text-gray-400">
+        <li>
+         <a class="hover:text-white" href="#">
+          About Us
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Contact
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Destinations
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Special Offers
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Travel Guide
+         </a>
+        </li>
+       </ul>
+      </div>
+      <div>
+       <h4 class="text-white font-semibold mb-3">
+        Support
+       </h4>
+       <ul class="space-y-2 text-sm text-gray-400">
+        <li>
+         <a class="hover:text-white" href="#">
+          Contact Us
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          FAQs
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Terms &amp; Conditions
+         </a>
+        </li>
+        <li>
+         <a class="hover:text-white" href="#">
+          Privacy Policy
+         </a>
+        </li>
+       </ul>
+      </div>
+      <div class="col-span-2 sm:col-span-1">
+       <h4 class="text-white font-semibold mb-3">
+        Newsletter
+       </h4>
+       <p class="text-gray-400 text-sm mb-3">
+        Subscribe to get special offers and updates
+       </p>
+       <form class="flex max-w-xs">
+        <input aria-label="Your email" class="flex-grow rounded-l-md border border-gray-400 px-3 py-2 text-gray-900 text-sm focus:outline-none" placeholder="Your email" type="email"/>
+        <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-r-md text-sm font-semibold" type="submit">
+         Subscribe
+        </button>
+       </form>
+      </div>
+     </div>
+    </div>
+    <div class="mt-10 border-t border-gray-700 pt-6 flex flex-col sm:flex-row sm:justify-between sm:items-center text-gray-400 text-sm">
+     <p>
+      © 2024 NTS Global Voyage. All rights reserved.
+     </p>
+     <div class="flex space-x-6 mt-4 sm:mt-0">
+      <a aria-label="Facebook" class="hover:text-white" href="#">
+       <i class="fab fa-facebook-f">
+       </i>
+      </a>
+      <a aria-label="Twitter" class="hover:text-white" href="#">
+       <i class="fab fa-twitter">
+       </i>
+      </a>
+      <a aria-label="Instagram" class="hover:text-white" href="#">
+       <i class="fab fa-instagram">
+       </i>
+      </a>
+      <a aria-label="LinkedIn" class="hover:text-white" href="#">
+       <i class="fab fa-linkedin-in">
+       </i>
+      </a>
+     </div>
+    </div>
+   </div>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let currentTab = 'upcoming';
+      let allBookings = [];
+      let filteredBookings = [];
+      let activeFilters = {
+        dateRange: null,
+        destination: null,
+        status: null,
+        type: null,
+        priceRange: null,
+        travelers: null
+      };
+
+      // Function to refresh bookings from the server
+      function refreshBookings() {
+        fetch('/api/bookings')
+          .then(response => response.json())
+          .then(bookings => {
+            allBookings = bookings;
+            applyAllFilters();
+          })
+          .catch(error => {
+            console.error('Error fetching bookings:', error);
+          });
+      }
+
+      // Function to apply all active filters
+      function applyAllFilters() {
+        let filtered = allBookings.filter(booking => {
+          if (currentTab === 'upcoming') {
+            return !booking.is_past;
+          } else {
+            return booking.is_past;
+          }
+        });
+
+        // Apply date range filter
+        if (activeFilters.dateRange) {
+          filtered = filtered.filter(booking => {
+            const bookingDate = new Date(booking.created_at);
+            const fromDate = activeFilters.dateRange.from ? new Date(activeFilters.dateRange.from) : null;
+            const toDate = activeFilters.dateRange.to ? new Date(activeFilters.dateRange.to) : null;
+            
+            if (fromDate && toDate) {
+              return bookingDate >= fromDate && bookingDate <= toDate;
+            } else if (fromDate) {
+              return bookingDate >= fromDate;
+            } else if (toDate) {
+              return bookingDate <= toDate;
+            }
+            return true;
+          });
+        }
+
+        // Apply destination filter
+        if (activeFilters.destination) {
+          filtered = filtered.filter(booking => {
+            return booking.destination.toLowerCase().includes(activeFilters.destination.toLowerCase());
+          });
+        }
+
+        // Apply status filter
+        if (activeFilters.status) {
+          filtered = filtered.filter(booking => {
+            return booking.status === activeFilters.status;
+          });
+        }
+
+        // Apply type filter
+        if (activeFilters.type) {
+          filtered = filtered.filter(booking => {
+            return booking.type === activeFilters.type;
+          });
+        }
+
+        // Apply price range filter
+        if (activeFilters.priceRange) {
+          filtered = filtered.filter(booking => {
+            const price = parseInt(booking.price.replace(/[^0-9]/g, ''));
+            const min = activeFilters.priceRange.min || 0;
+            const max = activeFilters.priceRange.max || Infinity;
+            return price >= min && price <= max;
+          });
+        }
+
+        // Apply travelers filter
+        if (activeFilters.travelers) {
+          filtered = filtered.filter(booking => {
+            if (activeFilters.travelers === '4+') {
+              return booking.travelers >= 4;
+            }
+            return booking.travelers === parseInt(activeFilters.travelers);
+          });
+        }
+
+        filteredBookings = filtered;
+        displayBookings();
+        updateActiveFiltersDisplay();
+      }
+
+      // Function to update active filters display
+      function updateActiveFiltersDisplay() {
+        const display = document.getElementById('activeFiltersDisplay');
+        const list = document.getElementById('activeFiltersList');
+        
+        const activeFilterTags = [];
+        
+        if (activeFilters.dateRange) {
+          const from = activeFilters.dateRange.from || 'Any';
+          const to = activeFilters.dateRange.to || 'Any';
+          activeFilterTags.push(`Date: ${from} to ${to}`);
+        }
+        
+        if (activeFilters.destination) {
+          activeFilterTags.push(`Destination: ${activeFilters.destination}`);
+        }
+        
+        if (activeFilters.status) {
+          activeFilterTags.push(`Status: ${activeFilters.status}`);
+        }
+        
+        if (activeFilters.type) {
+          activeFilterTags.push(`Type: ${activeFilters.type}`);
+        }
+        
+        if (activeFilters.priceRange) {
+          const min = activeFilters.priceRange.min || 'Any';
+          const max = activeFilters.priceRange.max || 'Any';
+          activeFilterTags.push(`Price: $${min} - $${max}`);
+        }
+        
+        if (activeFilters.travelers) {
+          activeFilterTags.push(`Travelers: ${activeFilters.travelers}`);
+        }
+        
+        if (activeFilterTags.length > 0) {
+          list.innerHTML = activeFilterTags.map(tag => 
+            `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">${tag}</span>`
+          ).join('');
+          display.classList.remove('hidden');
+        } else {
+          display.classList.add('hidden');
+        }
+      }
+
+      // Function to display bookings based on current tab and filters
+      function displayBookings() {
+        const container = document.getElementById('bookings-container');
+        container.innerHTML = '';
+        
+        if (filteredBookings.length === 0) {
+          const noBookingsHtml = `
+            <div class="text-center py-12">
+              <div class="text-gray-400 text-6xl mb-4">
+                <i class="fas fa-calendar-times"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                No ${currentTab === 'upcoming' ? 'Upcoming' : 'Past'} Bookings
+              </h3>
+              <p class="text-gray-500">
+                ${currentTab === 'upcoming' ? 'You don\'t have any upcoming trips planned.' : 'You don\'t have any past trips yet.'}
+              </p>
+            </div>
+          `;
+          container.innerHTML = noBookingsHtml;
+          return;
+        }
+        
+        filteredBookings.forEach((booking, index) => {
+          const bookingHtml = `
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-white rounded-lg shadow-sm p-4">
+              <div class="flex items-center space-x-4">
+                <img alt="Photo of ${booking.destination}" class="w-24 h-24 rounded-lg object-cover flex-shrink-0" height="96" src="${booking.image}" width="96"/>
+                <div>
+                  <p class="text-xs text-gray-400 mb-1">
+                    Booking Reference: ${booking.ref}
+                  </p>
+                  <h2 class="text-lg font-semibold text-[#111827]">
+                    ${booking.destination}
+                  </h2>
+                  <p class="text-sm text-gray-500">
+                    ${booking.dates}
+                  </p>
+                  <div class="flex items-center space-x-4 mt-1 text-sm">
+                    <span class="inline-block ${booking.status_color} px-2 py-0.5 rounded-full font-semibold">
+                      ${booking.status}
+                    </span>
+                    <button onclick="viewBookingDetails('${booking.id}')" class="text-blue-600 hover:underline cursor-pointer">
+                      View Details
+                    </button>
+                    ${currentTab === 'upcoming' ? `
+                      <button onclick="modifyBooking('${booking.id}')" class="text-blue-600 hover:underline cursor-pointer">
+                        Modify Booking
+                      </button>
+                    ` : ''}
+                    <button onclick="downloadItinerary('${booking.id}')" class="text-blue-600 hover:underline cursor-pointer">
+                      Download Itinerary
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 sm:mt-0 text-right text-blue-600 font-semibold text-lg min-w-[90px]">
+                ${booking.price}
+                <p class="text-gray-500 text-xs mt-1 flex items-center justify-end gap-1">
+                  <i class="fas fa-user-friends"></i>
+                  ${booking.travelers} Traveler${booking.travelers > 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+          `;
+          container.innerHTML += bookingHtml;
+        });
+      }
+
+      // Tab switching function
+      window.switchTab = function(tab) {
+        currentTab = tab;
+        
+        // Update tab styling
+        const upcomingTab = document.getElementById('upcomingTab');
+        const pastTab = document.getElementById('pastTab');
+        
+        if (tab === 'upcoming') {
+          upcomingTab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+          upcomingTab.classList.remove('text-gray-500');
+          pastTab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+          pastTab.classList.add('text-gray-500');
+        } else {
+          pastTab.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+          pastTab.classList.remove('text-gray-500');
+          upcomingTab.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+          upcomingTab.classList.add('text-gray-500');
+        }
+        
+        // Apply filters for the selected tab
+        applyAllFilters();
+      };
+
+      // Filter event handlers
+      const filterBtn = document.getElementById('filterBtn');
+      const sortSelect = document.getElementById('sortSelect');
+      const dateRangeBtn = document.getElementById('dateRangeBtn');
+      const destinationBtn = document.getElementById('destinationBtn');
+      const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+
+      if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+          document.getElementById('advancedFilterModal').classList.remove('hidden');
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          const sortBy = e.target.value;
+          if (sortBy) {
+            filteredBookings.sort((a, b) => {
+              switch (sortBy) {
+                case 'price':
+                  const priceA = parseInt(a.price.replace(/[^0-9]/g, ''));
+                  const priceB = parseInt(b.price.replace(/[^0-9]/g, ''));
+                  return priceA - priceB;
+                case 'destination':
+                  return a.destination.localeCompare(b.destination);
+                case 'status':
+                  return a.status.localeCompare(b.status);
+                case 'travelers':
+                  return a.travelers - b.travelers;
+                default:
+                  return new Date(a.created_at) - new Date(b.created_at);
+              }
+            });
+            displayBookings();
+          }
+        });
+      }
+
+      if (dateRangeBtn) {
+        dateRangeBtn.addEventListener('click', () => {
+          document.getElementById('dateRangeModal').classList.remove('hidden');
+        });
+      }
+
+      if (destinationBtn) {
+        destinationBtn.addEventListener('click', () => {
+          document.getElementById('destinationModal').classList.remove('hidden');
+        });
+      }
+
+      if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', () => {
+          activeFilters = {
+            dateRange: null,
+            destination: null,
+            status: null,
+            type: null,
+            priceRange: null,
+            travelers: null
+          };
+          applyAllFilters();
+          
+          // Reset form fields
+          document.getElementById('sortSelect').value = '';
+          document.getElementById('dateFrom').value = '';
+          document.getElementById('dateTo').value = '';
+          document.getElementById('destinationSearch').value = '';
+          document.querySelectorAll('.destination-checkbox').forEach(cb => cb.checked = false);
+          document.getElementById('statusFilter').value = '';
+          document.getElementById('typeFilter').value = '';
+          document.getElementById('minPrice').value = '';
+          document.getElementById('maxPrice').value = '';
+          document.getElementById('travelersFilter').value = '';
+        });
+      }
+
+      // View booking details
+      window.viewBookingDetails = function(bookingId) {
+        fetch('/api/bookings')
+          .then(response => response.json())
+          .then(bookings => {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+              const detailsHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <img src="${booking.image}" alt="${booking.destination}" class="w-full h-48 object-cover rounded-lg mb-4"/>
+                    <h3 class="text-lg font-semibold mb-2">${booking.destination}</h3>
+                    <p class="text-sm text-gray-600 mb-4">${booking.dates}</p>
+                  </div>
+                  <div class="space-y-4">
+                    <div>
+                      <h4 class="font-semibold text-gray-900 mb-2">Booking Information</h4>
+                      <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Booking ID:</span>
+                          <span class="font-medium">${booking.id}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Reference:</span>
+                          <span class="font-medium">${booking.ref}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Status:</span>
+                          <span class="inline-block ${booking.status_color} px-2 py-1 rounded-full text-xs font-semibold">${booking.status}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Price:</span>
+                          <span class="font-medium">${booking.price}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Travelers:</span>
+                          <span class="font-medium">${booking.travelers}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Type:</span>
+                          <span class="font-medium capitalize">${booking.type}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Created:</span>
+                          <span class="font-medium">${booking.created_at}</span>
+                        </div>
+                      </div>
+                    </div>
+                    ${booking.passenger_name ? `
+                    <div>
+                      <h4 class="font-semibold text-gray-900 mb-2">Passenger Details</h4>
+                      <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Name:</span>
+                          <span class="font-medium">${booking.passenger_name}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Email:</span>
+                          <span class="font-medium">${booking.passenger_email || 'N/A'}</span>
+                        </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Phone:</span>
+                          <span class="font-medium">${booking.passenger_phone || 'N/A'}</span>
+                        </div>
+                      </div>
+                    </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
+              document.getElementById('bookingDetails').innerHTML = detailsHtml;
+              document.getElementById('viewDetailsModal').classList.remove('hidden');
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching booking details:', error);
+          });
+      };
+
+      // Modify booking
+      window.modifyBooking = function(bookingId) {
+        fetch('/api/bookings')
+          .then(response => response.json())
+          .then(bookings => {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+              // Check if it's a past booking
+              if (booking.is_past) {
+                alert('Cannot modify past bookings. Past bookings are read-only.');
+                return;
+              }
+              
+              document.getElementById('modifyBookingId').value = booking.id;
+              document.getElementById('modifyPassengerName').value = booking.passenger_name || '';
+              document.getElementById('modifyPassengerEmail').value = booking.passenger_email || '';
+              document.getElementById('modifyPassengerPhone').value = booking.passenger_phone || '';
+              document.getElementById('modifyTravelers').value = booking.travelers || 1;
+              document.getElementById('modifyBookingModal').classList.remove('hidden');
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching booking for modification:', error);
+          });
+      };
+
+      // Download itinerary
+      window.downloadItinerary = function(bookingId) {
+        fetch('/api/bookings')
+          .then(response => response.json())
+          .then(bookings => {
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+              // Create a simple itinerary text
+              const itinerary = `
+ITINERARY - NTS Global Voyage
+================================
+
+Booking Details:
+- Booking ID: ${booking.id}
+- Reference: ${booking.ref}
+- Destination: ${booking.destination}
+- Dates: ${booking.dates}
+- Status: ${booking.status}
+- Price: ${booking.price}
+- Travelers: ${booking.travelers}
+- Type: ${booking.type}
+
+Passenger Information:
+- Name: ${booking.passenger_name || 'N/A'}
+- Email: ${booking.passenger_email || 'N/A'}
+- Phone: ${booking.passenger_phone || 'N/A'}
+
+Created: ${booking.created_at}
+
+Thank you for choosing NTS Global Voyage!
+              `;
+              
+              // Create and download file
+              const blob = new Blob([itinerary], { type: 'text/plain' });
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `itinerary-${booking.id}.txt`;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+              
+              alert('Itinerary downloaded successfully!');
+            }
+          })
+          .catch(error => {
+            console.error('Error downloading itinerary:', error);
+          });
+      };
+
+      // Close modals
+      window.closeViewModal = function() {
+        document.getElementById('viewDetailsModal').classList.add('hidden');
+      };
+
+      window.closeModifyModal = function() {
+        document.getElementById('modifyBookingModal').classList.add('hidden');
+      };
+
+      window.closeDateRangeModal = function() {
+        document.getElementById('dateRangeModal').classList.add('hidden');
+      };
+
+      window.closeDestinationModal = function() {
+        document.getElementById('destinationModal').classList.add('hidden');
+      };
+
+      window.closeAdvancedFilterModal = function() {
+        document.getElementById('advancedFilterModal').classList.add('hidden');
+      };
+
+      // Filter application functions
+      window.applyDateRangeFilter = function() {
+        const fromDate = document.getElementById('dateFrom').value;
+        const toDate = document.getElementById('dateTo').value;
+        
+        if (fromDate || toDate) {
+          activeFilters.dateRange = { from: fromDate, to: toDate };
+        } else {
+          activeFilters.dateRange = null;
+        }
+        
+        applyAllFilters();
+        closeDateRangeModal();
+      };
+
+      window.applyDestinationFilter = function() {
+        const searchText = document.getElementById('destinationSearch').value;
+        const selectedDestinations = Array.from(document.querySelectorAll('.destination-checkbox:checked'))
+          .map(cb => cb.value);
+        
+        if (searchText) {
+          activeFilters.destination = searchText;
+        } else if (selectedDestinations.length > 0) {
+          activeFilters.destination = selectedDestinations.join('|');
+        } else {
+          activeFilters.destination = null;
+        }
+        
+        applyAllFilters();
+        closeDestinationModal();
+      };
+
+      window.applyAdvancedFilter = function() {
+        const status = document.getElementById('statusFilter').value;
+        const type = document.getElementById('typeFilter').value;
+        const minPrice = document.getElementById('minPrice').value;
+        const maxPrice = document.getElementById('maxPrice').value;
+        const travelers = document.getElementById('travelersFilter').value;
+        
+        activeFilters.status = status || null;
+        activeFilters.type = type || null;
+        activeFilters.travelers = travelers || null;
+        
+        if (minPrice || maxPrice) {
+          activeFilters.priceRange = {
+            min: minPrice ? parseInt(minPrice) : null,
+            max: maxPrice ? parseInt(maxPrice) : null
+          };
+        } else {
+          activeFilters.priceRange = null;
+        }
+        
+        applyAllFilters();
+        closeAdvancedFilterModal();
+      };
+
+      // Handle modify booking form submission
+      document.getElementById('modifyBookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const bookingId = document.getElementById('modifyBookingId').value;
+        const passengerName = document.getElementById('modifyPassengerName').value;
+        const passengerEmail = document.getElementById('modifyPassengerEmail').value;
+        const passengerPhone = document.getElementById('modifyPassengerPhone').value;
+        const travelers = document.getElementById('modifyTravelers').value;
+
+        // Update the booking in the backend
+        fetch('/api/bookings', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: bookingId,
+            passenger_name: passengerName,
+            passenger_email: passengerEmail,
+            passenger_phone: passengerPhone,
+            travelers: parseInt(travelers)
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Booking updated successfully!');
+            closeModifyModal();
+            refreshBookings(); // Refresh the bookings list
+          } else {
+            alert('Failed to update booking: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error updating booking:', error);
+          alert('Error updating booking. Please try again.');
+        });
+      });
+
+      // Initial load
+      refreshBookings();
+    });
+  </script>
+ </body>
+</html>

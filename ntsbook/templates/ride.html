@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NTS Global Voyage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex items-center space-x-6">
+          <img src="{{ url_for('static', filename='images/nts_global_logo.png') }}" alt="NTS Global Voyage logo" class="w-8 h-8" />
+          <div class="text-lg font-semibold text-gray-900">NTS Global Voyage</div>
+          <ul class="hidden md:flex space-x-6 text-gray-600 text-sm font-medium">
+            <li><a href="/" class="hover:text-gray-900"><i class="fas fa-home text-gray-400 mr-1"></i>Home</a></li>
+            <li><a href="{{ url_for('bookings_page') }}" class="hover:text-gray-900"><i class="fas fa-book text-gray-400 mr-1"></i>Bookings</a></li>
+            <li><span class="hover:text-gray-900 cursor-pointer"><i class="fas fa-compass text-gray-400 mr-1"></i>Explore</span></li>
+            <li><span class="hover:text-gray-900 cursor-pointer"><i class="fas fa-chart-bar text-gray-400 mr-1"></i>Reports</span></li>
+            <li><span class="hover:text-gray-900 cursor-pointer"><i class="fas fa-user text-gray-400 mr-1"></i>Profile</span></li>
+          </ul>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative text-gray-400">
+            <input type="search" placeholder="Search destination..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-600"/>
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2"></i>
+          </div>
+          <div class="flex items-center space-x-1 cursor-pointer text-gray-600 hover:text-gray-900">
+            <span class="text-sm font-medium">EN</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="bg-blue-700 relative">
+    <img src="https://storage.googleapis.com/a1aa/image/9d740825-9d1a-42e4-4009-1176b54c6609.jpg" class="absolute inset-0 w-full h-full object-cover opacity-20" alt=""/>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center relative z-10">
+      <h1 class="text-white text-3xl sm:text-4xl font-semibold">Book Your Ride with Confidence</h1>
+      <p class="text-blue-200 mt-2 text-sm sm:text-base">Safe, Reliable, and Professional Transportation Services</p>
+    </div>
+  </section>
+
+  <!-- Booking Form -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
+    <form id="rideForm" class="bg-white shadow-md rounded-lg p-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+        <input type="text" id="pickup" placeholder="Enter pickup location" class="flex-1 border border-gray-300 rounded-md py-2 px-3 text-sm"/>
+        <input type="text" id="dropoff" placeholder="Enter drop-off location" class="flex-1 border border-gray-300 rounded-md py-2 px-3 text-sm"/>
+      </div>
+      <div class="w-full h-40 rounded-md overflow-hidden border border-gray-300">
+        <img src="https://storage.googleapis.com/a1aa/image/9c285373-dfbb-40f1-9878-c21e3f5e3722.jpg" class="w-full h-full object-cover" alt="Map Preview"/>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+        <input type="date" id="date" class="flex-1 border border-gray-300 rounded-md py-2 px-3 text-sm"/>
+        <input type="time" id="time" class="flex-1 border border-gray-300 rounded-md py-2 px-3 text-sm"/>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md px-6 py-2 text-sm sm:text-base">Search Rides</button>
+      </div>
+    </form>
+    <div id="noTaxiMsg" class="hidden text-center text-red-600 font-semibold mt-4">No taxi available</div>
+  </section>
+
+  <!-- Ride Options -->
+  <section id="rideOptions" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <!-- Economy -->
+    <div class="ride-card border border-gray-200 rounded-lg shadow-sm p-4" data-type="Economy" style="display:none;">
+      <img src="https://storage.googleapis.com/a1aa/image/6206b255-ae81-42c4-3bf7-2742f9c463ce.jpg" class="rounded-md w-full h-36 object-cover mb-3" alt=""/>
+      <h3 class="font-semibold text-lg mb-1">Economy</h3>
+      <ul class="text-gray-600 text-sm space-y-1 mb-3">
+        <li><i class="fas fa-user-friends mr-2 text-gray-400"></i>4 Seats</li>
+        <li><i class="fas fa-suitcase-rolling mr-2 text-gray-400"></i>2 Bags</li>
+        <li><i class="fas fa-clock mr-2 text-gray-400"></i>5 mins</li>
+      </ul>
+      <div class="flex justify-between items-center">
+        <span class="text-blue-600 font-semibold text-lg">$25</span>
+        <button class="book-now bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md px-6 py-1">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Business -->
+    <div class="ride-card border border-gray-200 rounded-lg shadow-sm p-4" data-type="Business" style="display:none;">
+      <img src="https://storage.googleapis.com/a1aa/image/28834aed-9f8a-46d8-3a0e-efaa9421e491.jpg" class="rounded-md w-full h-36 object-cover mb-3" alt=""/>
+      <h3 class="font-semibold text-lg mb-1">Business</h3>
+      <ul class="text-gray-600 text-sm space-y-1 mb-3">
+        <li><i class="fas fa-user-friends mr-2 text-gray-400"></i>4 Seats</li>
+        <li><i class="fas fa-suitcase-rolling mr-2 text-gray-400"></i>3 Bags</li>
+        <li><i class="fas fa-clock mr-2 text-gray-400"></i>6 mins</li>
+      </ul>
+      <div class="flex justify-between items-center">
+        <span class="text-blue-600 font-semibold text-lg">$45</span>
+        <button class="book-now bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md px-6 py-1">Book Now</button>
+      </div>
+    </div>
+
+    <!-- Premium -->
+    <div class="ride-card border border-gray-200 rounded-lg shadow-sm p-4" data-type="Premium" style="display:none;">
+      <img src="https://storage.googleapis.com/a1aa/image/af4a01b0-e6d8-4f82-f2c6-bfc63b7176c7.jpg" class="rounded-md w-full h-36 object-cover mb-3" alt=""/>
+      <h3 class="font-semibold text-lg mb-1">Premium</h3>
+      <ul class="text-gray-600 text-sm space-y-1 mb-3">
+        <li><i class="fas fa-user-friends mr-2 text-gray-400"></i>4 Seats</li>
+        <li><i class="fas fa-suitcase-rolling mr-2 text-gray-400"></i>4 Bags</li>
+        <li><i class="fas fa-clock mr-2 text-gray-400"></i>10 mins</li>
+      </ul>
+      <div class="flex justify-between items-center">
+        <span class="text-blue-600 font-semibold text-lg">$65</span>
+        <button class="book-now bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md px-6 py-1">Book Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Modal -->
+  <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-xl">&times;</button>
+      <h2 class="text-xl font-semibold mb-4">Confirm Booking</h2>
+      <form id="bookingForm" class="space-y-4">
+        <input type="text" id="passengerName" placeholder="Name" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"/>
+        <input type="email" id="passengerEmail" placeholder="Email" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"/>
+        <input type="tel" id="passengerPhone" placeholder="Phone Number" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"/>
+        <select id="passengerCount" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+          <option value="">Passengers (1–7)</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+        </select>
+        <select id="luggageCount" required class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm">
+          <option value="">Luggage (1–4)</option>
+          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+        </select>
+        <input type="hidden" id="selectedRideType"/>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md px-4 py-2 text-sm">Confirm Booking</button>
+        <div id="successTick" class="hidden text-green-600 text-center text-xl mt-3">✔ Booking Confirmed!</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- My Bookings -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12" id="myBookings" style="display:none;">
+    <h2 class="text-2xl font-semibold mb-4">My Bookings</h2>
+    <ul id="bookingList" class="space-y-4"></ul>
+  </section>
+  <!-- Footer (unchanged) -->
+  <footer class="bg-gray-900 text-gray-300 py-10 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-3 gap-8">
+      <div>
+        <h5 class="text-white font-semibold mb-4">NTS Global Voyage</h5>
+        <p class="text-sm">Your trusted partner for professional transportation services.</p>
+      </div>
+      <div>
+        <h5 class="text-white font-semibold mb-4">Quick Links</h5>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">About Us</a></li>
+          <li><a href="#" class="hover:text-white">Services</a></li>
+          <li><a href="#" class="hover:text-white">Booking</a></li>
+          <li><a href="#" class="hover:text-white">Support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="text-white font-semibold mb-4">Contact</h5>
+        <p>1234 Transport Street, City, Country</p>
+        <p>+1 234 567 8900</p>
+        <p>info@ntsglobal.com</p>
+      </div>
+    </div>
+    <div class="mt-10 text-center text-gray-500 text-xs">
+      © 2025 NTS Global Voyage. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ride search form
+      document.getElementById('rideForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pickup = document.getElementById('pickup').value.toLowerCase();
+        const dropoff = document.getElementById('dropoff').value.toLowerCase();
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const cards = document.querySelectorAll('.ride-card');
+        const noTaxi = document.getElementById('noTaxiMsg');
+
+        cards.forEach(c => c.style.display = 'none');
+        noTaxi.classList.add('hidden');
+
+        const validRoutes = [
+          { pickup: 'mumbai', dropoff: 'pune' },
+          { pickup: 'delhi', dropoff: 'gurgaon' },
+          { pickup: 'bangalore', dropoff: 'mysore' }
+        ];
+
+        if (pickup && dropoff && date && time) {
+          const matched = validRoutes.some(r => r.pickup === pickup && r.dropoff === dropoff);
+          if (matched) {
+            cards.forEach(c => c.style.display = 'block');
+          } else {
+            noTaxi.classList.remove('hidden');
+          }
+        }
+      });
+
+      
+      window.closeModal = function() {
+        document.getElementById('bookingModal').classList.add('hidden');
+      };
+
+      // Book now buttons
+      document.querySelectorAll('.book-now').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const rideType = this.closest('.ride-card').dataset.type;
+          document.getElementById('selectedRideType').value = rideType;
+          document.getElementById('bookingForm').reset();
+          document.getElementById('successTick').classList.add('hidden');
+          document.getElementById('bookingModal').classList.remove('hidden');
+        });
+      });
+
+      
+      document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submitted!');
+        
+        const name = document.getElementById('passengerName').value;
+        const email = document.getElementById('passengerEmail').value;
+        const phone = document.getElementById('passengerPhone').value;
+        const passengers = document.getElementById('passengerCount').value;
+        const luggage = document.getElementById('luggageCount').value;
+        const rideType = document.getElementById('selectedRideType').value;
+        
+        console.log('Form data:', { name, email, phone, passengers, luggage, rideType });
+        
+        
+        if (!name || !email || !phone || !passengers || !luggage || !rideType) {
+          console.error('Missing required fields');
+          alert('Please fill in all required fields');
+          return;
+        }
+
+        
+        const formData = {
+          destination: `${rideType} Ride`,
+          dates: 'TBD',
+          price: rideType === 'Economy' ? '$25' : rideType === 'Business' ? '$45' : '$65',
+          travelers: parseInt(passengers),
+          type: 'ride',
+          passenger_name: name,
+          passenger_email: email,
+          passenger_phone: phone,
+          image: 'https://storage.googleapis.com/a1aa/image/af4a01b0-e6d8-4f82-f2c6-bfc63b7176c7.jpg'
+        };
+
+        
+        console.log('Sending booking data:', formData);
+        fetch('/api/bookings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => {
+          console.log('Response status:', response.status);
+          return response.json();
+        })
+        .then(data => {
+          console.log('Response data:', data);
+          if (data.success) {
+            document.getElementById('successTick').classList.remove('hidden');
+            
+            
+            const li = document.createElement('li');
+            li.className = 'p-4 bg-gray-100 rounded-md shadow';
+            li.innerHTML = `<strong>${name}</strong> | ${email} | ${phone}<br>
+                            Ride Type: <strong>${rideType}</strong><br>
+                            Passengers: ${passengers}, Luggage: ${luggage}`;
+            document.getElementById('bookingList').appendChild(li);
+            document.getElementById('myBookings').style.display = 'block';
+
+            setTimeout(() => {
+              closeModal();
+              alert('✅ Booking confirmed! Redirecting to My Bookings...');
+              window.location.href = '/bookings';
+            }, 1500);
+          } else {
+            console.error('Booking failed:', data.message);
+            alert('Booking failed: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error creating booking:', error);
+          alert('Error creating booking. Please try again.');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
