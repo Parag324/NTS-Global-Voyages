@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTS Global Voyage - Rewards</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+    <nav class="bg-white border-b border-gray-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-4">
+                    <img alt="NTS Global Voyage logo" class="w-8 h-8 bg-black" src="/static/images/nts_global_logo.png" />
+                    <span class="font-semibold text-lg text-[#1e293b]">NTS Global Voyage</span>
+                    <ul class="hidden md:flex space-x-6 text-sm text-gray-600 font-medium">
+                        <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-home"></i><span>Home</span></li>
+                        <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-calendar-check"></i><span>Bookings</span></li>
+                        <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-compass"></i><span>Explore</span></li>
+                        <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer"><i class="fas fa-chart-bar"></i><span>Reports</span></li>
+                        <li class="flex items-center space-x-1 hover:text-gray-900 cursor-pointer relative"><i class="fas fa-user"></i><span>Profile</span><i class="fas fa-chevron-down text-xs ml-0.5"></i></li>
+                    </ul>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden sm:block">
+                        <input class="pl-10 pr-4 py-2 rounded-full border border-gray-300 text-sm text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-48 sm:w-64" placeholder="Search destinations..." type="text"/>
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    </div>
+                    <button aria-label="Notifications" class="text-gray-600 hover:text-gray-900 text-lg"><i class="fas fa-bell"></i></button>
+                    <div class="relative">
+                        <button aria-label="Language selection" class="flex items-center space-x-1 text-gray-600 hover:text-gray-900 text-sm font-medium">
+                            <span>EN</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="user-profile">
+        <div class="profile-content">
+            <div class="user-details">
+                <div class="profile-picture">
+                    <img src="{{ url_for('static', filename='images/profile.png') }}" alt="John Anderson">
+                </div>
+                <div class="user-info">
+                    <h2 class="user-name">John Anderson</h2>
+                    <div class="user-status">
+                        <i class="fas fa-coins"></i>
+                        <span>Gold Voyager</span>
+                    </div>
+                    <div class="user-coins">
+                        <i class="fas fa-coins"></i>
+                        <span>24,500 Voyage Coins</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <span class="progress-text">5,500 coins until Platinum status</span>
+                    </div>
+                    <button class="view-redeemed-btn" onclick="showRedeemedRewards()">
+                        <i class="fas fa-gift"></i>
+                        View Redeemed Rewards
+                    </button>
+                </div>
+            </div>
+            <div class="voyage-stats">
+                <div class="stat-card">
+                    <i class="fas fa-ship"></i>
+                    <div class="stat-label">Completed Voyages</div>
+                    <div class="stat-value">12</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="stat-label">Total Miles</div>
+                    <div class="stat-value">24,500</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-gift"></i>
+                    <div class="stat-label">Rewards Redeemed</div>
+                    <div class="stat-value">8</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="rewards-section">
+        <div class="rewards-header">
+            <div class="rewards-title">
+                <h1>Available Rewards</h1>
+                <p>Redeem your Voyage Coins for exclusive rewards.</p>
+            </div>
+            <div class="rewards-controls">
+                <div class="search-rewards">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search rewards...">
+                </div>
+                <button class="filter-btn"><i class="fas fa-filter"></i> Filter <i class="fas fa-chevron-down"></i></button>
+                <button class="sort-btn">Sort by <i class="fas fa-chevron-down"></i></button>
+            </div>
+        </div>
+        <div class="rewards-grid">
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/premium.jpg') }}" alt="Premium Cabin">
+                </div>
+                <div class="reward-content">
+                    <h3>Premium Cabin Upgrade</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>1,500</span>
+                    </div>
+                    <p>Upgrade your next voyage to a premium cabin with stunning ocean views</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/travel-kit.png') }}" alt="Travel Kit">
+                </div>
+                <div class="reward-content">
+                    <h3>NTS Travel Kit</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>800</span>
+                    </div>
+                    <p>Premium travel essentials kit including toiletries and accessories</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/gourmet.jpg') }}" alt="Gourmet Dining">
+                </div>
+                <div class="reward-content">
+                    <h3>Gourmet Dining Package</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>1,200</span>
+                    </div>
+                    <p>Fine dining experience for two at our exclusive onboard restaurant</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/spa.png') }}" alt="Spa Day">
+                </div>
+                <div class="reward-content">
+                    <h3>Spa Day Package</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>2,000</span>
+                    </div>
+                    <p>Full day of luxury spa treatments and wellness activities</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/wine-tasting.png') }}" alt="Wine Tasting">
+                </div>
+                <div class="reward-content">
+                    <h3>Wine Tasting Experience</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>1,800</span>
+                    </div>
+                    <p>Exclusive wine tasting experience with sommelier</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+            <div class="reward-card">
+                <div class="reward-image">
+                    <img src="{{ url_for('static', filename='images/cruise.png') }}" alt="Sunset Cruise">
+                </div>
+                <div class="reward-content">
+                    <h3>Sunset Cruise</h3>
+                    <div class="reward-cost">
+                        <i class="fas fa-coins"></i>
+                        <span>900</span>
+                    </div>
+                    <p>Private sunset cruise with champagne and canapés</p>
+                    <button class="redeem-btn">Redeem Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="redeemed-section" id="redeemed-rewards" style="display: none;">
+        <div class="redeemed-header">
+            <h2>Redeemed Rewards</h2>
+            <p>Track your redemption history and manage your rewards.</p>
+        </div>
+        <div class="redeemed-grid" id="redeemed-grid">
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h3>How do I earn Voyage Coin?</h3>
+                <p>You earn Voyage Coin through various activities including completing voyages, making purchases, and participating in special promotions.</p>
+            </div>
+            <div class="faq-item">
+                <h3>When do rewards expire?</h3>
+                <p>Rewards are valid for 12 months from the date of redemption. Please ensure you have enough coins before redeeming.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I transfer rewards to another member?</h3>
+                <p>Yes, you can transfer rewards to other NTS Global Voyage members through your account settings.</p>
+            </div>
+            <div class="faq-item">
+                <h3>How do I redeem rewards?</h3>
+                <p>Simply select the reward you want, click 'Redeem Now', and follow the instructions to complete your redemption.</p>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-ship"></i>
+                </div>
+                <p>Experience the world's most luxurious voyages with NTS Global Voyage.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Press</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Support</h4>
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Connect</h4>
+                    <a href="#">Facebook</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Instagram</a>
+                    <a href="#">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 NTS Global Voyage. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 
